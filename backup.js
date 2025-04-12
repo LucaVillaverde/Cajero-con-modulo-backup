@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import chalk from 'chalk';
+import chalk, { backgroundColorNames } from 'chalk';
 import cron from 'node-cron';
 import keypress from 'keypress';
 
@@ -23,6 +23,9 @@ function hacerBackup(mensaje) {
         console.log(chalk.cyan('\n--- Forzando el inicio del backup ---'));
     } else {
         console.log(chalk.cyan('\n--- Inicio automatico del backup ---'));
+        if (llamadas === 0) {
+            llamadas++;
+        }
     }
     console.log(chalk.cyan.bgBlack(`\n--- BackUp Automatico numero: ${llamadas} ---`));
     console.log(chalk.cyan.bgBlack(`\n--- BackUp Manual numero: ${llamadasManual} ---`));
@@ -56,6 +59,30 @@ function hacerBackup(mensaje) {
     }
 }
 
+function verificarDirectorio() {
+    console.clear();
+    if (!fs.existsSync('./backups')) {
+        console.log(chalk.red('\n--- El directorio de respaldos no existe ---\n'));
+        console.log(chalk.cyan.bgBlack('\n--- Intentando crear el directorio de respaldos ---\n'));
+        setTimeout(() => {
+            console.clear();
+            fs.mkdir('./backups', { recursive: true }, (err) => {
+                if (err) {
+                    console.error('Error al crear la carpeta de respaldos:', err);
+                    console.log(chalk.cyan.bgBlack('\n--- Volviendo a intentar ---\n'));
+                    setTimeout(verificarDirectorio, 2000);
+                } else {
+                    console.log(chalk.greenBright.bgBlack('\n--- Directorio de respaldos creado exitosamente ---\n'));
+                    setTimeout(hacerBackup, 2000);
+                }
+            });
+        }, 3000);
+    } else {
+        console.log(chalk.greenBright.bgBlack('\n--- Directorio de respaldos encontrado ---\n'));
+        setTimeout(hacerBackup, 2000);
+    }
+}
+
 // Configuración de keypress para capturar eventos
 keypress(process.stdin);
 
@@ -72,9 +99,10 @@ process.stdin.on('keypress', (ch, key) => {
     }
 });
 
+
 process.stdin.setRawMode(true);
 process.stdin.resume();
 
 
 console.clear();
-hacerBackup()
+verificarDirectorio();
