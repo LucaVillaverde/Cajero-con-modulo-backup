@@ -1,0 +1,25 @@
+{
+  "name": "testeo1",
+  "version": "1.0.0",
+  "main": "test.js",
+  "scripts": {
+    "cajero": "node cajero.js",
+    "backup": "node backup.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "type": "module",
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "better-sqlite3": "^11.9.1",
+    "chalk": "^5.4.1",
+    "fs": "^0.0.1-security",
+    "keypress": "^0.2.1",
+    "node-cron": "^3.0.3",
+    "path": "^0.12.7",
+    "sqlite3": "^5.1.7"
+  }
+}
