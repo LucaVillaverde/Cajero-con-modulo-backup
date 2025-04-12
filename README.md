@@ -12,8 +12,10 @@ Este proyecto personal fue desarrollado como una forma de practicar lógica de p
 - 🏦 Panel de administrador:
   - Crear, editar (solo edición de PIN) o eliminar cuentas
   - Visualizar historial de operaciones hechas (ingresos, retiros y transferencias)
-- 🧪 Validaciones estrictas para todos los campos
+  - Ver las cuentas existentes en la base de datos
+- 🧪 Validaciones estrictas para todos los campos (se aceptan sugerencias)
 - 💾 Sistema de backup:
+  - Al iniciar el modulo backup inicia su primer respaldo (Se haya hecho hace 5 minutos alguno o no, lo hara igual).
   - Backup **manual** desde consola (presionando `b`)
   - Backup **automático** cada hora con `node-cron`
   - Conserva solo los últimos 5 backups (elimina los más antiguos)
