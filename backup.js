@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
-import chalk, { backgroundColorNames } from 'chalk';
+import chalk from 'chalk';
+import sqlite3 from 'sqlite3';
 import cron from 'node-cron';
 import keypress from 'keypress';
 
@@ -11,14 +12,20 @@ let llamadasManual = 0;
 
 cron.schedule('0 0 * * * *', () => {
     llamadas++;
-    hacerBackup();
+    intentarHacerBackup();
 });
 
+const baseDeDatosOriginal = './miBaseDeDatos.db'; // Asegúrate de que esta ruta sea correcta
 
-
-// Función para hacer backup
 function hacerBackup(mensaje) {
-    console.clear();
+    const carpetaBackups = './backups';
+    const archivos = fs.readdirSync(carpetaBackups);
+    const backupsDB = archivos.filter(file => file.endsWith('.db'));
+
+    // Crear un nuevo backup
+    const ahora = new Date();
+    const nuevoBackup = `backup-${ahora.toISOString().replace(/[:.]/g, '-')}.db`;
+    const pathNuevoBackup = path.join(carpetaBackups, nuevoBackup);
     if (mensaje){
         console.log(chalk.cyan('\n--- Forzando el inicio del backup ---'));
     } else {
@@ -29,9 +36,7 @@ function hacerBackup(mensaje) {
     }
     console.log(chalk.cyan.bgBlack(`\n--- BackUp Automatico numero: ${llamadas} ---`));
     console.log(chalk.cyan.bgBlack(`\n--- BackUp Manual numero: ${llamadasManual} ---`));
-    const carpetaBackups = './backups';
-    const archivos = fs.readdirSync(carpetaBackups);
-    const backupsDB = archivos.filter(file => file.endsWith('.db'));
+
 
     // Si hay más de 3 backups, eliminar los más antiguos
     if (backupsDB.length >= 6) {
@@ -42,20 +47,62 @@ function hacerBackup(mensaje) {
         fs.unlinkSync(pathBackupAntiguo); // Borra el archivo más antiguo
     }
 
-    // Crear un nuevo backup
-    const ahora = new Date();
-    const nuevoBackup = `backup-${ahora.toISOString().replace(/[:.]/g, '-')}.db`;
-    const pathNuevoBackup = path.join(carpetaBackups, nuevoBackup);
-
-    // Aquí debería estar la lógica de copiar los datos a la base de datos
-    const baseDeDatosOriginal = './miBaseDeDatos.db'; // Asegúrate de que esta ruta sea correcta
-
-    // Copiar la base de datos original al archivo de backup
     try {
         fs.copyFileSync(baseDeDatosOriginal, pathNuevoBackup); // Copia la base de datos
         console.log(chalk.green(`\n--- Nuevo backup creado exitosamente: ${nuevoBackup} ---`));
     } catch (error) {
         console.log(chalk.red(`\n--- Error al crear el backup: ${error.message} ---`));
+    }
+}
+
+// Función para hacer backup
+function intentarHacerBackup(mensaje) {
+    console.clear();
+    if (!fs.existsSync(baseDeDatosOriginal)) {
+        console.log(chalk.red(`\n--- La base de datos original no existe: ${baseDeDatosOriginal} ---`));
+        const db = new sqlite3.Database('miBaseDeDatos.db', (err) => {
+            if (err) {
+                console.error('Error al conectar con la base de datos:', err.message);
+                return;
+            } else {
+                // Crear las tablas si no existen (solo se ejecuta si es la primera vez o se eliminó el .db)
+                db.serialize(() => {
+                    db.run(`
+                        CREATE TABLE IF NOT EXISTS Cuenta (
+                            Nombre TEXT NOT NULL,
+                            Apellido TEXT NOT NULL,
+                            Cedula TEXT PRIMARY KEY,
+                            PIN TEXT NOT NULL,
+                            Saldo INTEGER NOT NULL DEFAULT 0
+                        )
+                    `);
+        
+                    db.run(`
+                        CREATE TABLE IF NOT EXISTS Transacciones (
+                            ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                            Cedula TEXT NOT NULL,
+                            Tipo TEXT NOT NULL,
+                            Monto INTEGER NOT NULL,
+                            Destino TEXT,
+                            Fecha TEXT NOT NULL
+                        )
+                    `);
+                    console.log(chalk.green('--- Base de datos creada correctamente ---'));
+                    console.log(chalk.green('--- Tablas verificadas o creadas correctamente ---'));
+                    setTimeout(() => {
+                        console.clear();
+                        hacerBackup(mensaje);
+                    }, 2000);
+                });
+            }
+        });
+    } else {
+        console.log(chalk.green(`\n--- Base de datos original encontrada: ${baseDeDatosOriginal} ---`));
+        setTimeout(() => {
+            console.clear();
+            hacerBackup(mensaje);
+        })
+        // Copiar la base de datos original al archivo de backup
     }
 }
 
@@ -73,13 +120,13 @@ function verificarDirectorio() {
                     setTimeout(verificarDirectorio, 2000);
                 } else {
                     console.log(chalk.greenBright.bgBlack('\n--- Directorio de respaldos creado exitosamente ---\n'));
-                    setTimeout(hacerBackup, 2000);
+                    setTimeout(intentarHacerBackup, 2000);
                 }
             });
         }, 3000);
     } else {
         console.log(chalk.greenBright.bgBlack('\n--- Directorio de respaldos encontrado ---\n'));
-        setTimeout(hacerBackup, 2000);
+        setTimeout(IntentarHacerBackup, 2000);
     }
 }
 
@@ -91,7 +138,7 @@ process.stdin.on('keypress', (ch, key) => {
     if (key && key.name === 'b') {
         llamadasManual++;
         let mensaje = true;
-        hacerBackup(mensaje);
+        intentarHacerBackup(mensaje);
     }
     if (key && key.name === 'q') {
         console.log(chalk.cyan.bgBlack('\n--- Saliendo... ---'));
