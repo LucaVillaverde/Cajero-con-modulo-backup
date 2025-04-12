@@ -29,11 +29,32 @@ Este proyecto personal fue desarrollado como una forma de practicar lógica de p
 
 ---
 
+## 💀 Aviso
+
+- Si bien puede ejecutar primero el cajero sin problema aparente, recuerde que tiene que ejecutar el backup.js luego de terminar con el cajero.js
+
+  - El cajero.js por si solo no hace backups, solo genera el directorio backups y la base de datos que va a usar con la configuracion que precisa.
+
+  - El backup.js se encarga de lo siguiente:
+  
+  1. Si hay directorio y backups pero no hay una base de datos en uso, entonces copia el mas reciente backup para ponerlo en uso.
+  
+  2. Si hay directorio pero no hay backups ni base de datos en uso, entonces crea una base de datos preparada (pero sin informacion) para luego generarle un respaldo por si las dudas.
+
+  3. Si no hay directorio, backups y base de datos en uso, entonces crea el directorio, luego crea la base de datos y le hace una copia.
+
+  4. Si no hay directorio ni backups pero si base de datos, entonces crea el directorio y luego copia la base de datos en uso para hacer el backup.
+
+  - Por obvias razones no existe el caso de existir backups pero no el directorio...
+
+---
+
 ## 🔐 Cuenta Administrador
 
-- Al ejecutar `npm run cajero`, cuando se solicite la cédula, ingresá:
+1. Ejecutar `npm run cajero`, cuando se solicite la cédula, ingresá:
   - **Cédula**: `Administrador`
-- Cuando se solicite el PIN, ingresá:
+
+2. Cuando se solicite el PIN, ingresá:
   - **PIN**: `AdminPassword`
 
 Esto habilita el menú de administración con funciones como crear, editar o eliminar cuentas, y realizar otras acciones del sistema.
