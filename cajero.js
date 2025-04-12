@@ -2,56 +2,154 @@ import readline from 'readline';
 import sqlite3 from 'sqlite3';
 import chalk from 'chalk';
 import bcrypt from 'bcrypt';
+import fs from 'fs';
+import path from 'path';
 
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
 
-
+const baseDeDatosOriginal = './miBaseDeDatos.db'; // Asegúrate de que esta ruta sea correcta
+const carpetaBackups = './backups';
+const archivos = fs.readdirSync(carpetaBackups);
+const backupsDB = archivos.filter(file => file.endsWith('.db'));
+const ultimoBackup = backupsDB[backupsDB.length - 1];
 let codigoPin = false;
 let cedulaGuardada = false;
 let verifCed = false;
 let verifPin = false;
 let errores = 0;
 
-
 // Si no existe la base de datos, se crea una nueva.
 // Si la base de datos ya existe, se abre para realizar operaciones en ella.
 // Si hay un error al conectar con la base de datos, se muestra un mensaje de error.
 // Si todo fue bien, se muestra un mensaje de exito y inicia el programa pidiendo las credenciales del usuario.
 
-const db = new sqlite3.Database('miBaseDeDatos.db', (err) => {
-    if (err) {
-        console.error('Error al conectar con la base de datos:', err.message);
-        return;
+
+if (!fs.existsSync(baseDeDatosOriginal)) { 
+    console.log(chalk.red(`\n--- La base de datos original no existe: ${baseDeDatosOriginal} ---`));
+    const carpetaBackups = './backups';
+    const archivos = fs.readdirSync(carpetaBackups);
+    const backupsDB = archivos.filter(file => file.endsWith('.db'));
+    
+    if (backupsDB.length > 0) {
+        const ultimoBackup = backupsDB[backupsDB.length - 1];
+        try {
+            fs.copyFileSync(path.join(carpetaBackups, ultimoBackup), baseDeDatosOriginal);
+            console.log(chalk.green(`\n--- Base de datos original copiada exitosamente: ${baseDeDatosOriginal} ---`));
+        } catch (error) {
+            console.error(chalk.red(`Error al copiar la base de datos: ${error.message}`));
+        }
+        console.log(chalk.green(`\n--- Tablas verificadas o creadas correctamente ---`));
     } else {
-        console.log(chalk.green('--- Conectado a la base de datos SQLite ---'));
-        // Crear las tablas si no existen (solo se ejecuta si es la primera vez o se eliminó el .db)
-        db.serialize(() => {
-            db.run(`
-                CREATE TABLE IF NOT EXISTS Cuenta (
-                    Nombre TEXT NOT NULL,
-                    Apellido TEXT NOT NULL,
-                    Cedula TEXT PRIMARY KEY,
-                    PIN TEXT NOT NULL,
-                    Saldo INTEGER NOT NULL DEFAULT 0
-                )
-            `);
-
-            db.run(`
-                CREATE TABLE IF NOT EXISTS Transacciones (
-                    ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                    Cedula TEXT NOT NULL,
-                    Tipo TEXT NOT NULL,
-                    Monto INTEGER NOT NULL,
-                    Destino TEXT,
-                    Fecha TEXT NOT NULL
-                )
-            `);
-
-            console.log(chalk.green('--- Tablas verificadas o creadas correctamente ---'));
+        const db = new sqlite3.Database(baseDeDatosOriginal, (err) => {
+            console.clear();
+            if (err) {
+                console.log(chalk.red(`\n--- No se encontraron backups para copiar ---`));
+                    db.serialize(() => {
+                        db.run(`
+                            CREATE TABLE IF NOT EXISTS Cuenta (
+                                Nombre TEXT NOT NULL,
+                                Apellido TEXT NOT NULL,
+                                Cedula TEXT PRIMARY KEY,
+                                PIN TEXT NOT NULL,
+                                Saldo INTEGER NOT NULL DEFAULT 0
+                            )
+                        `, (err) => {
+                            if (err) {
+                                console.error('Error al crear la tabla Cuenta:', err.message);
+                            } else {
+                                console.log(chalk.green('--- Tabla Cuenta creada correctamente ---'));
+                            }
+                        });
+                    
+                        db.run(`
+                            CREATE TABLE IF NOT EXISTS Transacciones (
+                                ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                                Cedula TEXT NOT NULL,
+                                Tipo TEXT NOT NULL,
+                                Monto INTEGER NOT NULL,
+                                Destino TEXT,
+                                Fecha TEXT NOT NULL
+                            )
+                        `, (err) => {
+                            if (err) {
+                                console.error('Error al crear la tabla Transacciones:', err.message);
+                            } else {
+                                console.log(chalk.green('--- Tabla Transacciones creada correctamente ---'));
+                            }
+                        setTimeout(() => {
+                            console.clear();
+                            pedirPin();
+                        })
+                        });
+                    });  
+            } else {
+                console.clear();
+                console.log(chalk.green('\n--- Base de datos conectada correctamente ---\n'));
+                setTimeout(() => {
+                    console.clear();
+                    pedirPin();
+                }, 2000);
+            }
         });
+    }
+}
+
+const db = new sqlite3.Database(baseDeDatosOriginal, (err) => {
+    console.clear();
+    if (err) {
+        console.log(chalk.red(`\n--- No se encontraron backups para copiar ---`));
+            db.serialize(() => {
+                db.run(`
+                    CREATE TABLE IF NOT EXISTS Cuenta (
+                        Nombre TEXT NOT NULL,
+                        Apellido TEXT NOT NULL,
+                        Cedula TEXT PRIMARY KEY,
+                        PIN TEXT NOT NULL,
+                        Saldo INTEGER NOT NULL DEFAULT 0
+                    )
+                `, (err) => {
+                    if (err) {
+                        console.error('Error al crear la tabla Cuenta:', err.message);
+                    } else {
+                        console.log(chalk.green('--- Tabla Cuenta creada correctamente ---'));
+                    }
+                });
+            
+                db.run(`
+                    CREATE TABLE IF NOT EXISTS Transacciones (
+                        ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                        Cedula TEXT NOT NULL,
+                        Tipo TEXT NOT NULL,
+                        Monto INTEGER NOT NULL,
+                        Destino TEXT,
+                        Fecha TEXT NOT NULL
+                    )
+                `, (err) => {
+                    if (err) {
+                        console.error('Error al crear la tabla Transacciones:', err.message);
+                    } else {
+                        console.log(chalk.green('--- Tabla Transacciones creada correctamente ---'));
+                    }
+                setTimeout(() => {
+                    console.clear();
+                    pedirPin();
+                })
+                });
+            });  
+    } else {
+        console.clear();
+        console.log(chalk.green('\n--- Base de datos conectada correctamente ---\n'));
+        setTimeout(() => {
+            console.clear();
+            pedirPin();
+        }, 2000);
+    }
+});
+
+
     
         // La funcion crearCuenta() se encarga de crear una nueva cuenta en la base de datos.
         // Si la cedula ingresada ya existe en la base de datos, se muestra un mensaje de error y se vuelve a llamar a crearCuenta().
@@ -552,7 +650,19 @@ const db = new sqlite3.Database('miBaseDeDatos.db', (err) => {
                         } else {
                             console.clear();
                             console.log(chalk.red("\n--- Pin incorrecto ---\n"));
-                            setTimeout(pedirPin, 1500);
+                            console.log(chalk.yellow("\n--- Intentos restantes: " + (2 - errores) + " ---\n"));
+                            errores++;
+                            if (errores >= 3) {
+                                console.clear();
+                                console.log(chalk.red("\n--- Has llegado al limite de intentos. ---\n"));
+                                console.log(chalk.red("\n--- Bloqueando. ---\n"));
+                                setTimeout(() => {
+                                    console.clear();
+                                    rl.close();
+                                }, 3000);                                        
+                            } else {
+                                setTimeout(pedirPin, 2000);
+                            }
                         }
                     });
                     return;
@@ -646,7 +756,7 @@ const db = new sqlite3.Database('miBaseDeDatos.db', (err) => {
                                     cedulaGuardada = false;
                                     codigoPin = false;
                                     errores++;
-                                    console.log(chalk.yellow("\n--- Intentos restantes: " + (3 - errores) + " ---\n"));
+                                    console.log(chalk.yellow("\n--- Intentos restantes: " + (2 - errores) + " ---\n"));
                                     if (errores >= 3) {
                                         console.clear();
                                         console.log(chalk.red("\n--- Has llegado al limite de intentos. ---\n"));
@@ -654,7 +764,7 @@ const db = new sqlite3.Database('miBaseDeDatos.db', (err) => {
                                         setTimeout(() => {
                                             console.clear();
                                             rl.close();
-                                        });                                        
+                                        }, 3000);                                        
                                     } else {
                                         setTimeout(pedirPin, 2000);
                                     }
@@ -721,7 +831,6 @@ const db = new sqlite3.Database('miBaseDeDatos.db', (err) => {
                             cajero();
                             break;
                         case 3:
-                            console.log(chalk.cyan.bgBlack("\n--- Gracias por usar el cajero ---"));
                             reinicio();
                             break;
                         default:
@@ -752,11 +861,7 @@ const db = new sqlite3.Database('miBaseDeDatos.db', (err) => {
                             cajero();
                             break;
                         case 3:
-                            console.log(chalk.cyan.bgBlack("\n--- Gracias por usar el cajero ---"));
-                            setTimeout(() => {
-                                console.clear();
-                                reinicio();
-                            }, 1500);
+                            reinicio();
                             break;
                         default:
                             console.clear();
@@ -786,11 +891,7 @@ const db = new sqlite3.Database('miBaseDeDatos.db', (err) => {
                             cajero();
                             break;
                         case 3:
-                            console.log(chalk.cyan.bgBlack("\n--- Gracias por usar el cajero ---"));
-                            setTimeout(() => {
-                                console.clear();
-                                reinicio();
-                            }, 1500);
+                            reinicio();
                             break;
                         default:
                             console.clear();
@@ -1349,11 +1450,3 @@ const db = new sqlite3.Database('miBaseDeDatos.db', (err) => {
                 pedirPin();
             }, 3000);
         }
-
-        // Inicializar el programa
-        setTimeout(() => {
-            console.clear();
-            pedirPin();
-        }, 1500);
-    }
-});

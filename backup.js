@@ -38,8 +38,8 @@ function hacerBackup(mensaje) {
     console.log(chalk.cyan.bgBlack(`\n--- BackUp Manual numero: ${llamadasManual} ---`));
 
 
-    // Si hay más de 3 backups, eliminar los más antiguos
-    if (backupsDB.length >= 6) {
+    // Si hay más de 10 backups, eliminar los más antiguos
+    if (backupsDB.length >= 10) {
         backupsDB.sort((a, b) => fs.statSync(path.join(carpetaBackups, a)).mtime - fs.statSync(path.join(carpetaBackups, b)).mtime);
         const backupAntiguo = backupsDB.shift(); // Elimina el más antiguo
         const pathBackupAntiguo = path.join(carpetaBackups, backupAntiguo);
@@ -60,42 +60,61 @@ function intentarHacerBackup(mensaje) {
     console.clear();
     if (!fs.existsSync(baseDeDatosOriginal)) {
         console.log(chalk.red(`\n--- La base de datos original no existe: ${baseDeDatosOriginal} ---`));
-        const db = new sqlite3.Database('miBaseDeDatos.db', (err) => {
-            if (err) {
-                console.error('Error al conectar con la base de datos:', err.message);
-                return;
-            } else {
-                // Crear las tablas si no existen (solo se ejecuta si es la primera vez o se eliminó el .db)
-                db.serialize(() => {
-                    db.run(`
-                        CREATE TABLE IF NOT EXISTS Cuenta (
-                            Nombre TEXT NOT NULL,
-                            Apellido TEXT NOT NULL,
-                            Cedula TEXT PRIMARY KEY,
-                            PIN TEXT NOT NULL,
-                            Saldo INTEGER NOT NULL DEFAULT 0
-                        )
-                    `);
-        
-                    db.run(`
-                        CREATE TABLE IF NOT EXISTS Transacciones (
-                            ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                            Cedula TEXT NOT NULL,
-                            Tipo TEXT NOT NULL,
-                            Monto INTEGER NOT NULL,
-                            Destino TEXT,
-                            Fecha TEXT NOT NULL
-                        )
-                    `);
-                    console.log(chalk.green('--- Base de datos creada correctamente ---'));
-                    console.log(chalk.green('--- Tablas verificadas o creadas correctamente ---'));
-                    setTimeout(() => {
-                        console.clear();
-                        hacerBackup(mensaje);
-                    }, 2000);
-                });
+        const carpetaBackups = './backups';
+        const archivos = fs.readdirSync(carpetaBackups);
+        const backupsDB = archivos.filter(file => file.endsWith('.db'));
+        if (backupsDB.length > 0) {
+            const ultimoBackup = backupsDB[backupsDB.length - 1];
+            console.log(chalk.green(`\n--- Base de datos original encontrada: ${ultimoBackup} ---`));
+            fs.copyFileSync(path.join(carpetaBackups, ultimoBackup), baseDeDatosOriginal);
+            console.log(chalk.green(`\n--- Base de datos original copiada exitosamente: ${baseDeDatosOriginal} ---`));
+            if (!mensaje){
+                console.log(chalk.cyan('\n--- Inicio automatico del backup ---'));
+                if (llamadas === 0) {
+                    llamadas++;
+                }
             }
-        });
+            console.log(chalk.cyan.bgBlack(`\n--- BackUp Automatico numero: ${llamadas} ---`));
+            console.log(chalk.green(`\n--- Tablas verificadas o creadas correctamente ---`));
+        } else {
+            console.log(chalk.red(`\n--- No se encontraron backups para copiar ---`));
+            const db = new sqlite3.Database('miBaseDeDatos.db', (err) => {
+                if (err) {
+                    console.error('Error al conectar con la base de datos:', err.message);
+                    return;
+                } else {
+                    // Crear las tablas si no existen (solo se ejecuta si es la primera vez o se eliminó el .db)
+                    db.serialize(() => {
+                        db.run(`
+                            CREATE TABLE IF NOT EXISTS Cuenta (
+                                Nombre TEXT NOT NULL,
+                                Apellido TEXT NOT NULL,
+                                Cedula TEXT PRIMARY KEY,
+                                PIN TEXT NOT NULL,
+                                Saldo INTEGER NOT NULL DEFAULT 0
+                            )
+                        `);
+            
+                        db.run(`
+                            CREATE TABLE IF NOT EXISTS Transacciones (
+                                ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                                Cedula TEXT NOT NULL,
+                                Tipo TEXT NOT NULL,
+                                Monto INTEGER NOT NULL,
+                                Destino TEXT,
+                                Fecha TEXT NOT NULL
+                            )
+                        `);
+                        console.log(chalk.green('--- Base de datos creada correctamente ---'));
+                        console.log(chalk.green('--- Tablas verificadas o creadas correctamente ---'));
+                        setTimeout(() => {
+                            console.clear();
+                            hacerBackup(mensaje);
+                        }, 2000);
+                    });
+                }
+            });
+        }
     } else {
         console.log(chalk.green(`\n--- Base de datos original encontrada: ${baseDeDatosOriginal} ---`));
         setTimeout(() => {
@@ -126,7 +145,7 @@ function verificarDirectorio() {
         }, 3000);
     } else {
         console.log(chalk.greenBright.bgBlack('\n--- Directorio de respaldos encontrado ---\n'));
-        setTimeout(IntentarHacerBackup, 2000);
+        setTimeout(intentarHacerBackup, 2000);
     }
 }
 
