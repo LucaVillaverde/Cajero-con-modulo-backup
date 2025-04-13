@@ -15,10 +15,10 @@ Este proyecto personal fue desarrollado como una forma de practicar lógica de p
   - Ver las cuentas existentes en la base de datos
 - 🧪 Validaciones estrictas para todos los campos (se aceptan sugerencias)
 - 💾 Sistema de backup:
-  - Al iniciar el modulo backup inicia su primer respaldo (Se haya hecho hace 5 minutos alguno o no, lo hara igual).
+  - Al iniciar el modulo backup inicia un respaldo independientemente a todo
   - Backup **manual** desde consola (presionando `b`)
   - Backup **automático** cada hora con `node-cron`
-  - Conserva solo los últimos 5 backups (elimina los más antiguos)
+  - Conserva solo los últimos 10 backups (elimina los más antiguos)
 
 ---
 
@@ -37,7 +37,7 @@ Este proyecto personal fue desarrollado como una forma de practicar lógica de p
 
   - El backup.js se encarga de lo siguiente:
   
-  1. Si hay directorio y backups pero no hay una base de datos en uso, entonces copia el mas reciente backup para ponerlo en uso.
+  1. Si hay directorio y backups pero no hay una base de datos en uso, entonces copia el backup más reciente para ponerlo en uso.
   
   2. Si hay directorio pero no hay backups ni base de datos en uso, entonces crea una base de datos preparada (pero sin informacion) para luego generarle un respaldo por si las dudas.
 
