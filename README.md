@@ -1,4 +1,4 @@
-# 💳 TesteoCajero
+# 💳 Proyecto Cajero
 
 Sistema de cajero automático interactivo en consola hecho con Node.js.
 
