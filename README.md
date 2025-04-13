@@ -31,6 +31,8 @@ Este proyecto personal fue desarrollado como una forma de practicar lógica de p
 
 ## 💀 Aviso
 
+- Este proyecto se ha hecho y pensado para windows, no sé si funciona para Linux (seguramente sea alguna adaptación que haga a futuro).
+
 - Si bien puede ejecutar primero el cajero sin problema aparente, recuerde que tiene que ejecutar el backup.js luego de terminar con el cajero.js
 
   - El cajero.js por si solo no hace backups, solo genera el directorio backups y la base de datos que va a usar con la configuracion que precisa.
