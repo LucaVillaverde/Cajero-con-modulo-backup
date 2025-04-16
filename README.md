@@ -67,12 +67,10 @@ Esto habilita el menú de administración con funciones como crear, editar o eli
 
 1. Cloná el repositorio para tener acceso a todos sus archivos.
 
-2. Abre un cmd / powershell (o terminal como le quieras decir) desde la carpeta del proyecto.
+2. Ejecuta el "Instalador.bat".
 
-3. Asegurate de instalar las dependencias con "npm install".
+3. Ejecute "Verificar Integridad.bat".
 
-4. Usar "npm run cajero" para iniciar el sistema principal.
+4. Ejecute "Lanzador.bat".
 
-4. Usar "npm run backup" para ejecutar el modulo de backup.
-    - Presionar "b" para forzar un backup (un backup manual).
-    - Presionar "q" para cerrar el modulo backup.
+5. Todo listo, recomiendo que al cerrar el cajero vaya a la consola del backup y aprete "b" para hacer un backup manual y luego aprete "Esc" para salir.
