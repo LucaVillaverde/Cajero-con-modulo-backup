@@ -1,6 +1,11 @@
 @echo off
 cd /d %~dp0
 
+IF EXIST verificar_DB_Dir.js (
+	call node verificar_DB_Dir.js
+	pause
+)
+
 cls
 
 IF EXIST cajero.js (
