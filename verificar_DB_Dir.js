@@ -99,7 +99,7 @@ async function crearTablas() {
                 return reject(err);
             } else {
                 console.log(chalk.green('\n--- Tablas creadas y conexión cerrada correctamente ---\n'));
-                console.log(chalk.cyan.bgBlack('\n--- Ahora puede iniciar el cajero ---\n'));
+                console.log(chalk.cyan.bgBlack('\n--- Ahora puede iniciar el Lanzador.bat ---\n'));
                 resolve();
             }
         });

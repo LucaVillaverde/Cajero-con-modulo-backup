@@ -7,6 +7,7 @@ where node >nul 2>&1
 IF %ERRORLEVEL% NEQ 0 (
     echo Node.js no está instalado.
     timeout /t 5
+    pause
     exit /b
 )
 for /f "tokens=* usebackq" %%v in (`node -v`) do set "NODE_VERSION=%%v"
@@ -20,6 +21,7 @@ call :compare_versions "%NODE_VERSION_NUM%" "20.17.0"
 IF %ERRORLEVEL% NEQ 0 (
     echo Se requiere Node.js v20.17.0 o superior.
     timeout /t 5
+    pause
     exit /b
 )
 
@@ -28,6 +30,7 @@ where npm >nul 2>&1
 IF %ERRORLEVEL% NEQ 0 (
     echo npm no está instalado.
     timeout /t 5
+    pause
     exit /b
 )
 for /f "tokens=* usebackq" %%v in (`npm -v`) do set "NPM_VERSION=%%v"
@@ -38,51 +41,88 @@ call :compare_versions "%NPM_VERSION%" "11.2.0"
 IF %ERRORLEVEL% NEQ 0 (
     echo Se requiere npm v11.2.0 o superior.
     timeout /t 5
+    pause
     exit /b
 )
+
+timeout /t 2
+cls
 
 :: Revisar si node_modules ya está instalado
 IF EXIST node_modules (
     echo La carpeta node_modules existe.
     echo Verificando dependencias...
-    timeout /t 5
     :: Verificar que las dependencias listadas estén correctamente instaladas
     IF EXIST verificarDependencias.js (
-        echo Verificando integridad de dependencias...
-        node verificarDependencias.js
-        IF %ERRORLEVEL% NEQ 0 (
+    	call node verificarDependencias.js
+        IF ERRORLEVEL 1 (
+            echo Dependencias faltantes detectadas
             call npm install
+        ) else (
+            echo No faltan dependencias
+        )
+        IF EXIST verificar_DB_Dir.js (
+            call node verificar_DB_Dir.js
+            IF ERRORLEVEL 1 (
+                echo No se ha podido verificar la base de datos y/o el directorio.
+                pause
+            )
+        ) ELSE (
+            echo No existe verificar_DB_Dir.js revise que haya descargado todo.
             pause
-            exit /b
         )
     ) ELSE (
-        echo ADVERTENCIA: Falta el archivo verificarDependencias.js. No se puede validar node_modules.
+        echo No existe verificarDependencias.js revise que haya descargado todo.
+        pause
     )
 ) ELSE (
     echo Instalando dependencias...
     IF EXIST package.json (
         call npm install
-        SET INSTALACION_REALIZADA=1
+        IF EXIST verificarDependencias.js (
+    	    call node verificarDependencias.js
+            IF ERRORLEVEL 1 (
+                echo Dependencias faltantes detectadas
+                call npm install
+                pause
+            ) else (
+                echo No faltan dependencias
+            )
+            IF EXIST verificar_DB_Dir.js (
+                call node verificar_DB_Dir.js
+                IF ERRORLEVEL 1 (
+                    echo No se ha podido verificar la base de datos y/o el directorio.
+                    pause
+                )
+                pause
+            ) ELSE (
+                echo No existe verificar_DB_Dir.js revise que haya descargado todo.
+                pause
+            )
+        ) ELSE (
+            echo No existe verificarDependencias.js revise que haya descargado todo.
+            pause
+        )
     ) ELSE (
-        echo No se encontró package.json.
-        timeout /t 5
-        exit /b
+        echo No se ha encontrado package.json.
+        echo No es posible hacer la instalacion de dependencias.
+        echo Verifique que haya descargado todo el programa.
+        pause
     )
 )
 
 
 
-IF DEFINED INSTALACION_REALIZADA (
+IF %INSTALACION_REALIZADA%==1 (
     echo ========================
     echo Si la instalación salió mal, vuelve a intentarlo.
-    echo Si salió bien entonces ejecute Iniciador.bat.
     echo ========================
+
     pause
     exit /b
 )
 
 pause
-exit /b
 
 :: ========================
 :: Función para comparar versiones
