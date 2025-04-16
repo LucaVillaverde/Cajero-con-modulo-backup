@@ -159,7 +159,7 @@ process.stdin.on('keypress', (ch, key) => {
         let mensaje = true;
         intentarHacerBackup(mensaje);
     }
-    if (key && key.name === 'q') {
+    if (key && key.name === 'escape') {
         console.log(chalk.cyan.bgBlack('\n--- Saliendo... ---'));
         process.exit();
     }

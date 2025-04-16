@@ -2,8 +2,6 @@ import readline from 'readline';
 import sqlite3 from 'sqlite3';
 import chalk from 'chalk';
 import bcrypt from 'bcrypt';
-import fs from 'fs';
-import path from 'path';
 
 const rl = readline.createInterface({
     input: process.stdin,
@@ -11,147 +9,17 @@ const rl = readline.createInterface({
 });
 
 const baseDeDatosOriginal = './miBaseDeDatos.db'; // Asegúrate de que esta ruta sea correcta
-const carpetaBackups = './backups';
 let codigoPin = false;
 let cedulaGuardada = false;
 let verifCed = false;
 let verifPin = false;
 let errores = 0;
 
-// Si no existe la base de datos, se crea una nueva.
-// Si la base de datos ya existe, se abre para realizar operaciones en ella.
-// Si hay un error al conectar con la base de datos, se muestra un mensaje de error.
-// Si todo fue bien, se muestra un mensaje de exito y inicia el programa pidiendo las credenciales del usuario.
-
-
-async function verificarDirectorio() {
-    console.clear();
-    if (!fs.existsSync(carpetaBackups)) {
-        console.log(chalk.red('\n--- El directorio de respaldos no existe ---\n'));
-        console.log(chalk.cyan.bgBlack('\n--- Intentando crear el directorio de respaldos ---\n'));
-
-        try {
-            await new Promise((resolve, reject) => {
-                fs.mkdir('./backups', { recursive: true }, (err) => {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve();
-                    }
-                });
-            });
-            console.log(chalk.greenBright.bgBlack('\n--- Directorio de respaldos creado exitosamente ---\n'));
-            return true;
-        } catch (error) {
-            console.error(chalk.red('\n--- Error al crear la carpeta de respaldos:', error.message, '---\n'));
-            console.log(chalk.cyan.bgBlack('\n--- Intentando nuevamente en 2 segundos ---\n'));
-            await new Promise(resolve => setTimeout(resolve, 2000)); // Esperar 2 segundos antes de intentar nuevamente
-            return verificarDirectorio(); // Reintenta la creación del directorio
-        }
-    } else {
-        console.log(chalk.greenBright.bgBlack('\n--- Directorio de respaldos encontrado ---\n'));
-        return true;
-    }
-}
-
-async function manejarBaseDeDatos() {
-    const directorioResult = await verificarDirectorio(); // Asegura que el directorio sea verificado antes de continuar
-
-    if (directorioResult) {
-        if (!fs.existsSync(baseDeDatosOriginal)) {
-            console.log(chalk.red(`\n--- La base de datos original no existe: ${baseDeDatosOriginal} ---`));
-            const carpetaBackups = './backups';
-            const archivos = fs.readdirSync(carpetaBackups);
-            const backupsDB = archivos.filter(file => file.endsWith('.db'));
-
-            if (backupsDB.length > 0) {
-                const ultimoBackup = backupsDB[backupsDB.length - 1];
-                try {
-                    fs.copyFileSync(path.join(carpetaBackups, ultimoBackup), baseDeDatosOriginal);
-                    console.log(chalk.green(`\n--- Base de datos original copiada exitosamente: ${baseDeDatosOriginal} ---`));
-                } catch (error) {
-                    console.error(chalk.red(`Error al copiar la base de datos: ${error.message}`));
-                }
-            } else {
-                console.log(chalk.red('\n--- No se encontraron backups para copiar ---\n'));
-                await crearTablas();
-            }
-        } else {
-            console.log(chalk.green('\n--- Base de datos encontrada y conectada correctamente ---\n'));
-        }
-    }
-}
-
-async function crearTablas() {
-    return new Promise((resolve, reject) => {
-        const db = new sqlite3.Database(baseDeDatosOriginal, (err) => {
-            if (err) {
-                console.error(chalk.red('Error al conectar con la base de datos:', err.message));
-                return reject(err);
-            }
-        });
-
-        db.serialize(() => {
-            // Crear Tabla Cuenta
-            db.run(`
-                CREATE TABLE IF NOT EXISTS Cuenta (
-                    Nombre TEXT NOT NULL,
-                    Apellido TEXT NOT NULL,
-                    Cedula TEXT PRIMARY KEY,
-                    PIN TEXT NOT NULL,
-                    Saldo INTEGER NOT NULL DEFAULT 0
-                )
-            `, (err) => {
-                if (err) {
-                    console.error(chalk.red('Error al crear la tabla Cuenta:', err.message));
-                    return reject(err);
-                } else {
-                    console.log(chalk.green('--- Tabla Cuenta creada correctamente ---'));
-                }
-            });
-
-            // Crear Tabla Transacciones
-            db.run(`
-                CREATE TABLE IF NOT EXISTS Transacciones (
-                    ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                    Cedula TEXT NOT NULL,
-                    Tipo TEXT NOT NULL,
-                    Monto INTEGER NOT NULL,
-                    Destino TEXT,
-                    Fecha TEXT NOT NULL
-                )
-            `, (err) => {
-                if (err) {
-                    console.error(chalk.red('Error al crear la tabla Transacciones:', err.message));
-                    return reject(err);
-                } else {
-                    console.log(chalk.green('--- Tabla Transacciones creada correctamente ---'));
-                }
-            });
-        });
-
-        // Asegurar el cierre de conexión después de todas las operaciones
-        db.close((err) => {
-            if (err) {
-                console.error(chalk.red('Error al cerrar la conexión con la base de datos:', err.message));
-                return reject(err);
-            } else {
-                console.log(chalk.green('--- Conexión cerrada correctamente ---'));
-                resolve(); // Resolver la promesa después de cerrar la conexión
-            }
-        });
-    });
-}             
-
-// Ejecutar el flujo principal
-(async () => {
-    await manejarBaseDeDatos();
-})();
 
 const db = new sqlite3.Database(baseDeDatosOriginal, (err) => {
     console.clear();
     if (err) {
-        console.log(chalk.red(`\n--- No se encontraron backups para copiar ---`));
+        console.log(chalk.red(`\n--- No se pudo encontrar la base de datos ---`));
             db.serialize(() => {
                 db.run(`
                     CREATE TABLE IF NOT EXISTS Cuenta (
