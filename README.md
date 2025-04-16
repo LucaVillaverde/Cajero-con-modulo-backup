@@ -5,20 +5,47 @@ Sistema de cajero automático interactivo en consola hecho con Node.js.
 Este proyecto personal fue desarrollado como una forma de practicar lógica de programación, gestión de archivos, bases de datos y automatización de tareas en un entorno de consola.
 
 ---
+# ⁉️ Dudas (Aquí explico detalles pequeños como para agruparlos, lo que seria cajero.js no lo explicare aquí porque tiene muchas lineas y llenaria de mucha información este apartado, ya tiene comentarios en su codigo).
+
+- ¿Que hace el Instalador.bat?
+  1. Verifica que tengas NPM y Nodejs (minimo cumpliendo con los requisitos que marque mas abajo).
+  2. Luego verifica si el directorio node_modules existe (si no existe entonces no hay dependencias instaladas).
+     - en el caso de que exista, compara las dependencias instaladas con las dependencias que indica package.json (haciendo uso de verificarDependencias.js) e instala las faltantes.
+     - si no existiese pasa a hacer 'npm install" que es para instalar las dependencias que indica el package.json.
+     - si package.json no existe entonces simplemente no instala nada (intente conseguir el package.json del proyecto).
+  (Recuerde que el instalador.bat no instala NPM ni Nodejs por usted, tiene que instalarlo desde sus paginas correspondientes).
+
+- ¿Que hace el "Verificar Integridad.bat"?
+  1. Como su nombre lo indica verifica la integridad haciendo uso de dos archivos javascript (verificarDependencias.js y verificar_DB_Dir.js).
+     -Si alguno de los dos archivos javascript no existe entonces mandara un error.
+
+- ¿Que hace verificarDependencias.js?
+  1. Comprueba que exista la carpeta node_modules y el archivo package.json con los cuales hara una comparativa.
+  2. Verifica las dependencias instaladas y las compara con las dependencias que package.json dice que el proyecto necesita.
+  3. Si falta alguna dependencia entonces se le avisara al usuario y por ende tendra que usar el instalador.bat.
+  4. Sino falta ninguna dependencia entonces simplemente dira que esta todo correcto.
+
+- ¿Que hace verificar_DB_Dir.js?
+  1. Comprueba la existencia del directorio backups (que si no existe lo crea).
+  2. Comprueba la existencia y integridad de la base de datos en uso.
+     - Si la base de datos no existe, o tiene algun problema entonces trata de conseguir un respaldo reciente.
+     - Si no hay respaldo disponible entonces crea una base de datos preparada para su uso (con las tablas creadas, pero sin informacion).
+---
 
 ## 🚀 Funcionalidades principales
 
-- ✔️ Ingreso con cédula y PIN encriptado (`bcrypt`)
+- ✔️ Ingreso con cédula y PIN encriptado (`bcrypt`).
 - 🏦 Panel de administrador:
-  - Crear, editar (solo edición de PIN) o eliminar cuentas
-  - Visualizar historial de operaciones hechas (ingresos, retiros y transferencias)
-  - Ver las cuentas existentes en la base de datos
-- 🧪 Validaciones estrictas para todos los campos (se aceptan sugerencias)
+  - Crear, editar (solo edición de PIN) o eliminar cuentas.
+  - Visualizar historial de operaciones hechas (ingresos, retiros y transferencias).
+  - Ver las cuentas existentes en la base de datos.
+- 🧪 Validaciones estrictas para todos los campos (se aceptan sugerencias).
 - 💾 Sistema de backup:
-  - Al iniciar el modulo backup inicia un respaldo independientemente a todo
-  - Backup **manual** desde consola (presionando `b`)
-  - Backup **automático** cada hora con `node-cron`
-  - Conserva solo los últimos 10 backups (elimina los más antiguos)
+  - Al iniciar el modulo backup inicia un respaldo independientemente a todo.
+  - Backup **manual** desde consola (presionando `b`).
+  - Backup **automático** cada hora con `node-cron`.
+  - Conserva solo los últimos 10 backups (elimina los más antiguos).
+  - Salir con "Esc".
 
 ---
 
