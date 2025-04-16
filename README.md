@@ -5,7 +5,7 @@ Sistema de cajero automático interactivo en consola hecho con Node.js.
 Este proyecto personal fue desarrollado como una forma de practicar lógica de programación, gestión de archivos, bases de datos y automatización de tareas en un entorno de consola.
 
 ---
-# ⁉️ Dudas (Aquí explico detalles pequeños como para agruparlos, lo que seria cajero.js no lo explicare aquí porque tiene muchas lineas y llenaria de mucha información este apartado, ya tiene comentarios en su codigo).
+# ⁉️ Dudas
 
 - ¿Que hace el Instalador.bat?
   1. Verifica que tengas NPM y Nodejs (minimo cumpliendo con los requisitos que marque mas abajo).
