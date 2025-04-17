@@ -12,7 +12,7 @@ let llamadasManual = 0;
 
 cron.schedule('0 0 * * * *', () => {
     llamadas++;
-    intentarHacerBackup();
+    verificarDirectorio();
 });
 
 const baseDeDatosOriginal = './miBaseDeDatos.db'; // Asegúrate de que esta ruta sea correcta
@@ -170,5 +170,6 @@ process.stdin.setRawMode(true);
 process.stdin.resume();
 
 
-console.clear();
-verificarDirectorio();
+console.log(chalk.cyan.bgBlack('\n--- Presiona "b" para hacer un backup manual ---\n'));
+console.log(chalk.cyan.bgBlack('\n--- Presiona "esc" para salir ---\n'));
+console.log(chalk.cyan.bgBlack('\n--- Esperando a que pase una hora para el backup automatico ---\n'));

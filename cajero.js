@@ -2,10 +2,22 @@ import readline from 'readline';
 import sqlite3 from 'sqlite3';
 import chalk from 'chalk';
 import bcrypt from 'bcrypt';
+import keypress from 'keypress';
 
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
+});
+
+// Configuración de keypress para capturar eventos
+keypress(process.stdin);
+
+// Cuando se presione una tecla, la función se activará
+process.stdin.on('keypress', (ch, key) => {
+    if (key && key.name === 'escape') {
+        console.log(chalk.cyan.bgBlack('\n--- Terminando programa... ---'));
+        process.exit();
+    }
 });
 
 const baseDeDatosOriginal = './miBaseDeDatos.db'; // Asegúrate de que esta ruta sea correcta

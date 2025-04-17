@@ -6,6 +6,7 @@
     "cajero": "node cajero.js",
     "backup": "node backup.js",
     "verificar": "node verificar_DB_Dir.js",
+    "backupEmergencia": "node backupEmergencia.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

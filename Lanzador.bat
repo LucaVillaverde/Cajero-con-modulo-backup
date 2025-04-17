@@ -12,9 +12,16 @@ IF EXIST cajero.js (
 	echo Programa cajero encontrado.
 	IF EXIST backup.js (
 		echo Programa backup encontrado, iniciando cajero y sistema backup....
-		start cmd /k "cd /d %~dp0 && node cajero.js"
-		timeout /t 2
 		start cmd /k "cd /d %~dp0 && node backup.js"
+		call node cajero.js
+		if EXIST backupEmergencia.js (
+			echo Cierre del cajero detectado, iniciando backup de emergencia...
+			call node backupEmergencia.js
+			pause
+		) ELSE (
+			echo No se pudo hacer el backup de cierre del cajero.
+			echo Fuerza un backup manual apretando "b" en el programa de backups.
+		)
 		exit /b
 		pause
 	) else (
