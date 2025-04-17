@@ -112,11 +112,11 @@ function hacerBackup() {
 
     try {
         fs.copyFileSync(baseDeDatosOriginal, pathNuevoBackup); // Copia la base de datos
-        console.log(chalk.green(`\n--- Nuevo backup creado exitosamente: ${nuevoBackup} ---`));
+        console.log(chalk.green(`\n--- Nuevo backup creado exitosamente: ${nuevoBackup} ---\n`));
     } catch (error) {
         console.log(chalk.red(`\n--- Error al crear el backup: ${error.message} ---`));
     }
 }
 
-
+console.clear();
 verificarDirectorio();

@@ -51,7 +51,7 @@ async function verificarTablasBaseDeDatos(ruta) {
 
             db.close();
             if (faltantes.length > 0) {
-                console.log(chalk.red(`\n--- Faltan las siguientes tablas: ${faltantes.join(", ")} ---\n`));
+                // console.log(chalk.red(`\n--- Faltan las siguientes tablas: ${faltantes.join(", ")} ---\n`));
                 return resolve(false);
             }
 
@@ -108,50 +108,100 @@ async function crearTablas() {
 
 // Maneja la existencia o restauración de la base de datos
 async function manejarBaseDeDatos() {
-    const directorioResult = await verificarDirectorio();
+    console.log(chalk.cyan.bgBlack('\n--- Verificando estado de la base de datos... ---\n'));
 
-    if (directorioResult) {
-        console.log(chalk.cyan.bgBlack('\n--- Verificando estado de la base de datos... ---\n'));
+    const baseExiste = fs.existsSync(baseDeDatosOriginal);
+    const baseValida = baseExiste ? await verificarTablasBaseDeDatos(baseDeDatosOriginal) : false;
 
-        const baseExiste = fs.existsSync(baseDeDatosOriginal);
-        const baseValida = baseExiste ? await verificarTablasBaseDeDatos(baseDeDatosOriginal) : false;
+    if (!baseValida) {
+        if (baseExiste) {
+            console.log(chalk.yellow(`\n--- La base de datos original está incompleta o dañada ---\n`));
+        } else {
+            console.log(chalk.red(`\n--- La base de datos original no existe ---\n`));
+        }
 
-        if (!baseValida) {
-            if (baseExiste) {
-                console.log(chalk.yellow(`\n--- La base de datos original está incompleta o dañada ---\n`));
-            } else {
-                console.log(chalk.red(`\n--- La base de datos original no existe ---\n`));
-            }
-
-            const archivos = fs.readdirSync(carpetaBackups);
-            const backupsDB = archivos.filter(file => file.endsWith('.db')).sort();
+        const backupBueno = await colocarBackupBueno();
             
-            console.log(chalk.cyan.bgBlack('\n--- Buscando backups validos... ---\n'));
-            for (let i = backupsDB.length - 1; i >= 0; i--) {
-                const backupPath = path.join(carpetaBackups, backupsDB[i]);
-                const valido = await verificarTablasBaseDeDatos(backupPath);
-                if (valido) {
-                    fs.copyFileSync(backupPath, baseDeDatosOriginal);
-                    console.log(chalk.green(`\n--- Restaurado desde backup: ${backupsDB[i]} ---\n`));
-                    return;
-                }
-            }
-
-            console.log(chalk.red('\n--- No se encontraron backups válidos ---\n'));
+        if (!backupBueno) {
             console.log(chalk.cyan.bgBlack('\n--- Creando nueva base de datos... ---\n'));
             await crearTablas();
-        } else {
+        }
+    } else {
             console.log(chalk.green('\n--- Base de datos existente y válida ---\n'));
             console.log(chalk.cyan.bgBlack('\n--- Ahora puede iniciar el cajero ---\n'));
+    }
+}
+
+async function colocarBackupBueno() {
+    console.log(chalk.cyan.bgBlack('\n--- Buscando backups validos... ---\n'));
+
+
+    const archivos = fs.readdirSync(carpetaBackups);
+    const backupsDB = archivos.filter(file => file.endsWith('.db')).sort();
+
+    for (let i = backupsDB.length - 1; i >= 0; i--) {
+        const backupPath = path.join(carpetaBackups, backupsDB[i]);
+        const valido = await verificarTablasBaseDeDatos(backupPath);
+        if (valido) {
+            fs.copyFileSync(backupPath, baseDeDatosOriginal);
+            console.log(chalk.green(`\n--- Restaurado desde backup: ${backupsDB[i]} ---\n`));
+            return true;
+        } else {
+            console.log(chalk.red('\n--- No se encontraron backups válidos ---\n'));
+            return false;
         }
     }
 }
 
-// Ejecutar
+
+async function borrarBackupsMalos() {
+    const directorioResult = await verificarDirectorio();
+
+    if (!directorioResult) {
+        return false;
+    }
+    console.log(chalk.cyan.bgBlack('\n--- Buscando backups no validos... ---\n'));
+    const archivos = fs.readdirSync(carpetaBackups);
+    const backupsDB = archivos.filter(file => file.endsWith('.db')).sort();
+
+
+    for (let i = backupsDB.length - 1; i >= 0; i--) {
+        const backupPath = path.join(carpetaBackups, backupsDB[i]);
+        const valido = await verificarTablasBaseDeDatos(backupPath);
+        if (!valido) {
+            fs.unlinkSync(backupPath); // Borra el archivo no valido
+            console.log(chalk.red(`\n--- Backup no valido: ${backupsDB[i]} ---\n`));
+            console.log(chalk.red(`\n--- Eliminando backup: ${backupPath} ---\n`));
+            backupsDB.splice(i, 1);
+        }
+    }
+    return true;
+}
+
+
 (async () => {
     try {
-        await manejarBaseDeDatos();
+        const result = await borrarBackupsMalos();
+        if (result) {
+            await manejarBaseDeDatos();
+        } else {
+            console.error('\n--- No se encontro el directorio de backups ---\n');
+        }
     } catch (error) {
-        console.error(chalk.red('Error en el flujo principal:', error.message));
+        console.error(`Error al borrar backups no validos: ${error.message}`);
     }
 })();
+
+// Ejecutar
+// (async () => {
+//     try {
+//         await manejarBaseDeDatos();
+//     } catch (error) {
+//         console.error(chalk.red('Error en el flujo principal:', error.message));
+//     }
+// })();
+
+
+
+
+

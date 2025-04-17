@@ -4,16 +4,33 @@ cd /d %~dp0
 IF EXIST verificar_DB_Dir.js (
 	call node verificar_DB_Dir.js
 	pause
+	IF EXIST verificarDependencias.js (
+		call node verificarDependencias.js
+		IF ERRORLEVEL 1 (
+			call npm install
+			pause
+		)
+		pause
+	) ELSE (
+		echo No existe verificarDependencias.js, verifique que haya descargado todo.
+		timeout /t 5
+		exit /b
+	)
+) ELSE (
+	echo No existe verificar_DB_Dir.js, verifique que haya descargado todo.
+	timeout /t 5
+	exit /b
 )
 
 cls
 
 IF EXIST cajero.js (
-	echo Programa cajero encontrado.
 	IF EXIST backup.js (
-		echo Programa backup encontrado, iniciando cajero y sistema backup....
+		echo Iniciando Programa...
 		start cmd /k "cd /d %~dp0 && node backup.js"
 		call node cajero.js
+		timeout /t 2
+		cls
 		if EXIST backupEmergencia.js (
 			echo Cierre del cajero detectado, iniciando backup de emergencia...
 			call node backupEmergencia.js
