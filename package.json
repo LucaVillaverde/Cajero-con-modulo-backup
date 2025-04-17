@@ -1,6 +1,6 @@
 {
-  "name": "Cajero",
-  "version": "1.2.0",
+  "name": "cajero",
+  "version": "1.0.0",
   "main": "cajero.js",
   "scripts": {
     "cajero": "node cajero.js",
