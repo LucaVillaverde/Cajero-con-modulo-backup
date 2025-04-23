@@ -1,5 +1,11 @@
 import chalk from "chalk";
-import { appendFile } from "fs";
+import { rl, db } from "../../Cajero/Codigo_Central/cajero.js";
+import bcrypt from "bcrypt";
+import { menuAdministrador } from "../menuAdministrador.js";
+import consulta from "../../Cajero/Consultas_no_admins/consulta.js";
+
+let Admin = true;
+let tipo = "crearCuenta";
 
 // La funcion crearCuenta() se encarga de crear una nueva cuenta en la base de datos.
 // Si la cedula ingresada ya existe en la base de datos, se muestra un mensaje de error y se vuelve a llamar a crearCuenta().
@@ -26,13 +32,15 @@ function ingresarPin(cedula, nombre, apellido) {
         db.run('INSERT INTO Cuenta (Nombre, Apellido, Cedula, Pin, Saldo) VALUES (?, ?, ?, ?, ?)', [nombre, apellido, cedula, hashedPin, 0], (err) => {
             if (err) {
                 console.clear();
-                console.log(chalk.red("\n--- Error al crear la cuenta ---\n"));
-                setTimeout(crearCuenta, 1500);
+                console.log(chalk.red("\n--- Error al crear la cuenta en la base de datos. ---\n"));
+                setTimeout(menuAdministrador, 1500);
                 return;
             }
             console.clear();
             console.log(chalk.green("\n--- Cuenta creada con exito ---\n"));
-            setTimeout(menuAdministrador, 1500);
+            setTimeout(() => {
+                consulta(tipo, Admin)
+            },1500);
         });
     })
 }
@@ -89,7 +97,7 @@ function ingresarCedula() {
                 if (err) {
                     console.clear();
                     console.log(chalk.red("\n--- No se pudo acceder a la base de datos ---\n"));
-                    setTimeout(crearCuenta, 1500);
+                    setTimeout(menuAdministrador, 1500);
                     return;
                 }
                 if (row) {

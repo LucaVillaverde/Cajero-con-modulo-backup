@@ -1,7 +1,6 @@
 import chalk from "chalk";
 import { registrarOperacion } from "./registrarOperacion.js";
-import { cajeroTransaccion } from "./cajero.js";
-import { db } from "./cajero.js";
+import { cajeroTransaccion, db, cedulaGuardada } from "../Codigo_Central/cajero.js";
 
 
 
@@ -21,7 +20,7 @@ En caso de error, se muestra un mensaje de error y se vuelve a llamar a la funci
 En caso de exito, se muestra un mensaje de confirmacion y se vuelve a llamar a la funcion cajero().
 */
 
-export function transaccion(cantidad, destino, cedulaGuardada) {
+export function transaccion(cantidad, destino) {
   console.clear();
   if (cedulaGuardada === destino) {
     console.error(

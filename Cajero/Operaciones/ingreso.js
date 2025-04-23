@@ -1,7 +1,6 @@
 import chalk from "chalk";
 import { registrarOperacion } from "./registrarOperacion.js";
-import { cajeroIngreso } from "./cajero.js";
-import { db } from "./cajero.js";
+import { cajeroIngreso, db, cedulaGuardada } from "../Codigo_Central/cajero.js";
 
 
 /** 
@@ -22,7 +21,7 @@ En caso de exito, se muestra un mensaje de confirmación y se vuelve a llamar a 
 
 
 
-export function ingreso(cantidad, cedulaGuardada) {
+export function ingreso(cantidad) {
     console.clear();
     if (cantidad < 500) {
         console.error('\n--- El monto ingresado debe ser igual o mayor a 500. ---\n');
@@ -49,6 +48,7 @@ export function ingreso(cantidad, cedulaGuardada) {
                     console.log(chalk.green("\n--- Ingreso realizado con éxito ---"));
                     console.log(chalk.green("\n--- Su saldo actualizado: " + saldoActualizado + "$ ---"));
                     console.log(chalk.green("\n--- Gracias por utilizar nuestros servicios ---\n"));
+                    console.log(chalk.green(`\n--- ${cedulaGuardada} ---\n`));
                 }
             });
         });

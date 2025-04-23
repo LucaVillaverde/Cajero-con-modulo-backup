@@ -1,7 +1,6 @@
 import chalk from "chalk";
 import { registrarOperacion } from "./registrarOperacion.js";
-import { cajeroRetiro } from "./cajero.js";
-import { db } from "./cajero.js";
+import { cajeroRetiro, db, cedulaGuardada } from "../Codigo_Central/cajero.js";
 
 
 /** 
@@ -20,7 +19,7 @@ En caso de exito, se muestra un mensaje de confirmación y se vuelve a llamar a 
 
 
 
-export function retiro(cantidad, cedulaGuardada) {
+export function retiro(cantidad) {
     console.clear();
     db.get('SELECT Saldo FROM Cuenta WHERE Cedula = ?', [cedulaGuardada], (err, row) => {
         if (err || !row) {

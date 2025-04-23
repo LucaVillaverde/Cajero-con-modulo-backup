@@ -1,0 +1,6 @@
+Aqui tenemos al "cajero.js", es el codigo principal (debido a que es el programa principal y que llama a la mayoria de codigos del proyecto, por lo que es la central y/o nexo del programa).
+
+Desde aqui llamamos a todo el resto de Funciones y operaciones requeridas por el sistema para efectuar cambios (Retiros, Ingresos, Transacciones, registro de operaciones) y
+poder ver cierta informacion de nuestra cuenta (Como lo es el saldo).
+
+Si perdieras el archivo "cajero.js" mas alla de que el codigo seria facilmente fabricable, si lo hicieras "casero", tendrias que verificar que haga todas las llamadas correspondientes.

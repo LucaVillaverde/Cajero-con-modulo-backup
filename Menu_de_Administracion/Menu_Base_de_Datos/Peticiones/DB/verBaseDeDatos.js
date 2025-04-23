@@ -1,8 +1,8 @@
 import chalk from "chalk";
-import { rl, reinicio } from "./cajero.js";
+import { rl, reinicio } from "../../../../Cajero/Codigo_Central/cajero.js";
 import { verCuentas } from "./verCuentas.js";
 import { verHistorial } from "./verHistorial.js";
-import { menuAdministrador } from "./menuAdministrador.js";
+import { menuAdministrador } from "../../../menuAdministrador.js";
 
 
 

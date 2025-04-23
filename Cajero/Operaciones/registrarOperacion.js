@@ -1,6 +1,6 @@
 import chalk from "chalk";
-import { db } from "./cajero.js";
-import { consulta } from "./consulta.js";
+import { db } from "../Codigo_Central/cajero.js";
+import { consulta } from "../Consultas_no_admins/consulta.js";
 
 
 /**

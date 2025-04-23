@@ -1,0 +1,5 @@
+Una vez iniciado el programa y habiendo indicado que queres loguearte, cargara este menu de logueo.
+
+A partir de este menu es que se hace la separacion mas notoria en el funcionamiento y distribucion del codigo.
+
+Segun los datos ingresados, podras entrar al menu de administrador o al programa general para el usuario.

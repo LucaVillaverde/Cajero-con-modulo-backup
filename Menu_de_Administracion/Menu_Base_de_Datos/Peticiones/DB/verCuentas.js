@@ -1,8 +1,7 @@
 import chalk from "chalk";
-import { db, rl } from "./cajero.js";
-import { menuAdministrador } from "./menuAdministrador.js";
+import { db, rl, reinicio } from "../../../../Cajero/Codigo_Central/cajero.js";
+import { menuAdministrador } from "../../../menuAdministrador.js";
 import { verBaseDeDatos } from "./verBaseDeDatos.js";
-import { reinicio } from "./cajero.js";
 
 
 /**

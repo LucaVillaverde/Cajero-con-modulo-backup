@@ -2,3 +2,4 @@ backups/
 *.log
 node_modules/
 miBaseDeDatos.db
+Cajero.bat

@@ -1,0 +1,35 @@
+¿Que nos permite hacer el menu administrador?
+
+
+
+Menu Administrador:
+
+1- Permite la creacion de cuentas (Cedula, Nombre, Apellido, PIN).
+
+2- Permite la edicion de cuentas
+
+    1. Editar el nombre y/o apellido (Por si el usuario se ha cambiado el nombre y/o el apellido mediante un proceso legal, es recomendable usar esta opcion para evitar futuras confuciones).
+
+    2. Editar PIN de una cuenta (Solo en caso de que el usuario lo solicite y se hace una verificacion previa para comprobar que es el dueño de la cuenta indicando el PIN ya asignado).
+
+3- Eliminacion de cuentas
+    
+    1. Nos permite eliminar una cuenta (Se necesita Cedula de la cuenta, el PIN de la cuenta y se verifica si es el de la cuenta).
+
+    2. Por seguridad se muestra un menu de confirmacion mostrando la informacion de la cuenta a eliminar para cerciorarse de que se quiere borrar esa cuenta.
+
+4- Menu de la base de datos
+
+    1. Acceso a la informacion de las cuentas existentes.
+
+    2. Acceso historial de operaciones realizadas (Quien hizo la operacion, que tipo de operacion, si hubo algun destinatario, Monto de la operacion y la fecha de su realizacion).
+
+        * Quien hizo la operacion (Cedula de la cuenta).
+        
+        * Que tipo de operacion se realizo (Ingreso, retiro, transaccion).
+
+        * Si hubo algun destinatario (Si dice ninguno es porque no fue una transaccion, si dice algo distinto deberia ser la cedula de la persona que recibio el monto).
+
+        * La fecha de su realizacion (Año-mes-dia T hora:minuto:segundo: 2025-04-19T16:01:05.665Z).
+        
+

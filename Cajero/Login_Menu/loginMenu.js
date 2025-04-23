@@ -1,10 +1,9 @@
 import chalk from "chalk";
 import bcrypt from "bcrypt";
-import { rl, db, cajero } from "./cajero.js";
-import { menuAdministrador } from "./menuAdministrador.js";
+import { rl, db, cajero } from "../Codigo_Central/cajero.js";
+import { menuAdministrador } from "../../Menu_de_Administracion/menuAdministrador.js";
 
 let errores = 0;
-let cedulaDB = false;
 
 function solicitarCedula() {
     console.clear();
@@ -37,8 +36,7 @@ function solicitarCedula() {
                 return solicitarCedula();
             }
 
-            cedulaDB = cedula;
-            solicitarPin();
+            solicitarPin(cedula);
         });
     });
 }
@@ -68,7 +66,7 @@ function solicitarPin(cedula) {
             return solicitarPin();
         }
 
-        db.get('SELECT PIN, Nombre FROM Cuenta WHERE Cedula = ?', [cedulaDB], (err, rows) => {
+        db.get('SELECT PIN, Nombre FROM Cuenta WHERE Cedula = ?', [cedula], (err, rows) => {
             if (err) {
                 console.clear();
                 console.log(chalk.red("\n--- Error al consultar la base de datos ---\n"));
@@ -87,7 +85,7 @@ function solicitarPin(cedula) {
             if (verif) {
                 console.clear();
                 console.log(chalk.green("\n--- Bienvenido " + rows.Nombre + " ---\n"));
-                cajero(cedulaDB);
+                cajero(cedula);
             } else {
                 console.clear();
                 console.log(chalk.red("\n--- Pin incorrecto ---\n"));
@@ -103,7 +101,9 @@ function solicitarPin(cedula) {
                         rl.close();
                     }, 3000);
                 } else {
-                    setTimeout(solicitarPin, 2000);
+                    setTimeout(() => {
+                        solicitarPin(cedula);
+                    }, 2000);
                 }
             }
         });

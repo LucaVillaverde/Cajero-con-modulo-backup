@@ -1,9 +1,9 @@
 import chalk from "chalk";
-import { rl, reinicio } from "./cajero.js";
-import { crearCuenta } from "./crearCuenta.js"
-import { editarPinCuenta } from "./editarPinCuenta.js"
-import { eliminarCuenta } from "./eliminarCuenta.js"
-import { verBaseDeDatos } from "./verBaseDeDatos.js"
+import { rl, reinicio } from "../Cajero/Codigo_Central/cajero.js";;
+import { crearCuenta } from "./Creacion/crearCuenta.js"
+import { editarCuentaMenu } from "./Edicion/editarCuentaMenu.js"
+import { eliminarCuenta } from "./Eliminacion/eliminarCuenta.js"
+import { verBaseDeDatos } from "./Menu_Base_de_Datos/Peticiones/DB/verBaseDeDatos.js"
 
 
 /**
@@ -30,7 +30,7 @@ export function menuAdministrador() {
     console.log(chalk.cyan.bgBlack("\n--- Bienvenido Administrador ---"));
     console.log(chalk.cyan.bgBlack("\n--- Ingrese 1 si quiere ver la base de datos ---"));
     console.log(chalk.cyan.bgBlack("\n--- Ingrese 2 si quiere crear una cuenta ---"));
-    console.log(chalk.cyan.bgBlack("\n--- Ingrese 3 si quiere editar el pin de una cuenta ---"));
+    console.log(chalk.cyan.bgBlack("\n--- Ingrese 3 para entrar al menu de editar cuenta ---"));
     console.log(chalk.cyan.bgBlack("\n--- Ingrese 4 si quiere eliminar una cuenta ---"));
     console.log(chalk.cyan.bgBlack("\n--- Ingrese 5 si quiere cerrar sesion ---\n"));
     rl.question("\nDigite la opcion: ", (input) => {
@@ -43,7 +43,7 @@ export function menuAdministrador() {
                 crearCuenta();
                 break;
             case 3:
-                editarPinCuenta();
+                editarCuentaMenu();
                 break;
             case 4:
                 eliminarCuenta();

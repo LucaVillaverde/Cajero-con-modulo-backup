@@ -1,0 +1,3 @@
+Porque consultas no admins, simple y llanamente para poder separar el codigo de procesamiento para usuario general y el codigo de procesamiento para administradores.
+
+Permitiendo asi un mejor entendimiento y poder emplear un facil mantenimiento.
