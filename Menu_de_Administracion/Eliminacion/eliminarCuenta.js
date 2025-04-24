@@ -7,6 +7,7 @@ import bcrypt from "bcrypt";
 
 let totalEnviadas = 0;
 let totalRecibidas = 0;
+let errores = 0;
 let Admin = true;
 let tipo = "eliminarCuenta";
 
@@ -29,7 +30,7 @@ function hacerBorrado(cedula) {
         if (err) {
             console.clear();
             console.log(chalk.red("\n--- Error al eliminar transacciones ---\n"));
-            setTimeout(eliminarCuenta, 1500);
+            setTimeout(menuAdministrador, 1500);
             return;
         }
 
@@ -96,12 +97,14 @@ function confirmacion(cedula, nombre, apellido) {
             case 2:
                 console.clear();
                 console.log(chalk.red("\n--- Operacion cancelada ---\n"));
-                setTimeout(eliminarCuenta, 1500);
+                setTimeout(menuAdministrador, 1500);
                 break
             default:
                 console.clear();
                 console.log(chalk.red("\n--- Opcion no valida ---\n"));
-                setTimeout(confirmacion, 1500);
+                setTimeout(() => {
+                    confirmacion(cedula, nombre, apellido);
+                }, 1500);
         }
     });
 }
@@ -126,7 +129,7 @@ function indicarPin(cedula, nombre, apellido) {
         return;
     }
 
-    rl.question("\nIngrese el pin de la cuenta a borrar: ", (input) => {
+    rl.question("\nIngrese el PIN de la cuenta a borrar: ", (input) => {
         const pin = input.trim();
         
         if (!/^\d{4}$/.test(pin)) {
@@ -165,10 +168,28 @@ function indicarPin(cedula, nombre, apellido) {
                 setTimeout(() => {
                     confirmacion(cedula, nombre, apellido);
                 }, 1000);
+            } else {
+                if (errores >= 3) {
+                    console.clear();
+                    errores = 0;
+                    console.log(chalk.red("\n--- Has agotado tus intentos ---\n"));
+                    setTimeout(() => {
+                        console.clear();
+                        menuAdministrador();
+                    }, 1500);
+                    return;
+                } else {
+                    console.clear();
+                    console.log(chalk.red("\n--- Pin incorrecto ---\n"));
+                    console.log(chalk.red("\n--- Te quedan " + (3 - errores) + " intentos ---\n"));
+                    setTimeout(() => {
+                        console.clear();
+                        errores++;
+                        indicarPin(cedula, nombre, apellido);
+                    }, 1500);
+                }
             }
         })
-
-
     });
 }
 

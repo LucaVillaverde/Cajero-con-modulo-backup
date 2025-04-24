@@ -15,7 +15,7 @@ Si se ingresa 1 se llama a la funcion verBaseDeDatos().
 
 Si se ingresa 2 se llama a la funcion crearCuenta().
 
-Si se ingresa 3 se llama a la funcion editarPinCuenta().
+Si se ingresa 3 se llama a la funcion editarCuentaMenu().
 
 Si se ingresa 4 se llama a la funcion eliminarCuenta().
 

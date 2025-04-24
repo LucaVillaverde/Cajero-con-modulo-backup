@@ -1,0 +1,23 @@
+eliminarCuenta.js hace lo siguiente:
+
+
+
+1- Despliega un menu de confirmacion para asegurar que el administrador quiera realmente eliminar una cuenta, si no quiere hacerlo entonces vuelve al menu principal de administrador.
+
+2- Una vez indicado que si se quiere eliminar una cuenta, pasara a solicitar la cedula de la cuenta a eliminar.
+
+    1. Verificando que la cedula exista en la base de datos (y guardandose informacion como nombre y apellido para mas adelante).
+
+    2. Obtiene todas las transacciones en las que la cuenta fue el que las efectuó y todas las que recibio (transacciones).
+
+    3. Se solicita indicar el PIN de la cuenta a borrar (por seguridad de la misma), se compara con el PIN de la base de datos y si es igual prosigue.
+
+        * Si el PIN no coincide entonces manda un aviso de que el PIN es incorrecto y indica cuantos intentos restantes tiene el administrador para colocar bien el PIN (maximo tres intentos).
+
+        * Si la cantidad de intentos fue superada entonces se informa que se agotaron sus intentos y lo manda al menu de administrador.
+
+    4. Se muestra informacion de la cuenta que se esta queriendo borrar (Cedula, nombre, apellido, operaciones realizadas y transacciones recibidas) y se solicita indicar si esta seguro de eliminar la cuenta.
+
+        * Si el administrador indica que no quiere eliminar la cuenta entonces se cancela toda la operacion y se le envia al menu de administrador.
+
+        * En el caso de haber indicado que si quiere eliminar la cuenta, se hace un borrado de todas las transacciones registradas desde y hacia la cuenta, para luego borrar la cuenta en si.

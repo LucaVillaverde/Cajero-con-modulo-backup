@@ -2,7 +2,6 @@ import chalk from "chalk";
 import { rl } from "../cajero.js";
 import { pedirPinActual } from "./pedirPinActual.js";
 import { editarCuentaMenu } from "./editarCuentaMenu.js";
-import { pedirCedulaActual } from "./pedirCedulaActual.js";
 
 function consulta(){
     console.log(chalk.cyan.bgBlack("\n--- Ingrese 1 para volver a intentarlo ---\n"));

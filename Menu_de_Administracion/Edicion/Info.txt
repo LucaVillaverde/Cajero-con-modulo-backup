@@ -1,0 +1,29 @@
+----------------------------------------
+
+editarCuentaMenu.js que hace?
+
+
+
+1- Despliega un menu para solicitar al usuario que proceso de edicion efectuar sobre una cuenta.
+
+2- Una vez elegido alguna opcion, se solicita la cedula actual de la cuenta y su PIN actual.
+
+    * pedirCedulaActual se encarga de solicitar la cedula y buscarla en la base de datos para saber si existe.
+
+    * pedirPinActual se encarga de solicitar el PIN y compararlo con el PIN de la cuenta por seguridad y luego llamar a central_de_Edicion en caso de ir todo bien.
+
+
+
+
+----------------------------------------
+
+
+central_de_Edicion.js que hace?
+
+1- Recibe la cedula para saber cual cuenta editar y la opcion seleccionada por el administrador
+    
+    * La opcion es o son los procesos de edicion que se deben efectuar sobre la cuenta.
+
+2- Según sea la opcion, se editara el PIN, Nombre o Apellido (una combinacion de dos opciones simultaneas o las tres cosas a la vez).
+
+

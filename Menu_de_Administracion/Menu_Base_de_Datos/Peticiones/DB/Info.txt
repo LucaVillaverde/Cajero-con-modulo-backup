@@ -1,0 +1,12 @@
+¿Que nos permite hacer el menu de base de datos?
+
+Menu base de datos:
+
+1- Nos da acceso al listado de las cuentas existentes en la base de datos.
+
+    1. Nos muestra el nombre, apellido, contraseña encriptada y saldo disponible.
+
+2- Nos permite ver el historial de procesos realizados por los usuarios
+
+    1. Muestra quien efectuo el proceso (cedula), el tipo de proceso, el Monto del proceso,
+       El destino (cuando es transaccion muestra la cedula destinataria sino dice ninguno) y la fecha al momento de efectuar el proceso.

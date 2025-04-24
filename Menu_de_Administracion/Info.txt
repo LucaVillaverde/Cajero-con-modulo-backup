@@ -6,11 +6,10 @@ Menu Administrador:
 
 1- Permite la creacion de cuentas (Cedula, Nombre, Apellido, PIN).
 
-2- Permite la edicion de cuentas
+2- Permite la edicion de cuentas (Nombre, Apellido y PIN).
 
-    1. Editar el nombre y/o apellido (Por si el usuario se ha cambiado el nombre y/o el apellido mediante un proceso legal, es recomendable usar esta opcion para evitar futuras confuciones).
-
-    2. Editar PIN de una cuenta (Solo en caso de que el usuario lo solicite y se hace una verificacion previa para comprobar que es el dueño de la cuenta indicando el PIN ya asignado).
+    1. Se nos otorga todas las posibles combinaciones de edicion a una cuenta para poder modificar con mejor flexibilidad y agilidad.
+       * pOodes editar una sola cosa, dos o tres a la vez sin perjudicar el flujo y sin tener que estar volviendo constantemente al menu de edicion.
 
 3- Eliminacion de cuentas
     
