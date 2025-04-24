@@ -56,7 +56,11 @@ function solicitarPin(cedula) {
             } else {
                 console.clear();
                 console.log(chalk.red("\n--- Pin incorrecto ---\n"));
-                return loginMenu();
+                setTimeout(() => {
+                    console.clear();
+                    loginMenu();
+                }, 2000);
+                return;
             }
         }
 
