@@ -15,10 +15,10 @@ cron.schedule('0 0 * * * *', () => {
     verificarDirectorio();
 });
 
-const baseDeDatosOriginal = '../miBaseDeDatos.db'; // Asegúrate de que esta ruta sea correcta
+const baseDeDatosOriginal = '../../miBaseDeDatos.db'; // Asegúrate de que esta ruta sea correcta
 
 function hacerBackup(mensaje) {
-    const carpetaBackups = '../backups';
+    const carpetaBackups = '../../backups';
     const archivos = fs.readdirSync(carpetaBackups);
     const backupsDB = archivos.filter(file => file.endsWith('.db'));
 
@@ -60,7 +60,7 @@ function intentarHacerBackup(mensaje) {
     console.clear();
     if (!fs.existsSync(baseDeDatosOriginal)) {
         console.log(chalk.red(`\n--- La base de datos original no existe: ${baseDeDatosOriginal} ---`));
-        const carpetaBackups = './backups';
+        const carpetaBackups = '../../backups';
         const archivos = fs.readdirSync(carpetaBackups);
         const backupsDB = archivos.filter(file => file.endsWith('.db'));
         if (backupsDB.length > 0) {
@@ -127,12 +127,12 @@ function intentarHacerBackup(mensaje) {
 
 function verificarDirectorio() {
     console.clear();
-    if (!fs.existsSync('./backups')) {
+    if (!fs.existsSync('../../backups')) {
         console.log(chalk.red('\n--- El directorio de respaldos no existe ---\n'));
         console.log(chalk.cyan.bgBlack('\n--- Intentando crear el directorio de respaldos ---\n'));
         setTimeout(() => {
             console.clear();
-            fs.mkdir('./backups', { recursive: true }, (err) => {
+            fs.mkdir('../../backups', { recursive: true }, (err) => {
                 if (err) {
                     console.error('Error al crear la carpeta de respaldos:', err);
                     console.log(chalk.cyan.bgBlack('\n--- Volviendo a intentar ---\n'));

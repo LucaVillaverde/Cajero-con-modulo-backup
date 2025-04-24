@@ -4,16 +4,16 @@ import chalk from 'chalk';
 import sqlite3 from 'sqlite3';
 
 
-const baseDeDatosOriginal = './miBaseDeDatos.db'; // Asegúrate de que esta ruta sea correcta
+const baseDeDatosOriginal = '../../miBaseDeDatos.db'; // Asegúrate de que esta ruta sea correcta
 
 
 
 function verificarDirectorio() {
-    if (!fs.existsSync('./backups')) {
+    if (!fs.existsSync('../../backups')) {
         console.log(chalk.red('\n--- El directorio de respaldos no existe ---\n'));
         console.log(chalk.cyan.bgBlack('\n--- Intentando crear el directorio de respaldos ---\n'));
         setTimeout(() => {
-            fs.mkdir('./backups', { recursive: true }, (err) => {
+            fs.mkdir('../../backups', { recursive: true }, (err) => {
                 if (err) {
                     console.error('Error al crear la carpeta de respaldos:', err);
                     console.log(chalk.cyan.bgBlack('\n--- Volviendo a intentar ---\n'));
@@ -34,7 +34,7 @@ function verificarDirectorio() {
 function intentarHacerBackup() {
     if (!fs.existsSync(baseDeDatosOriginal)) {
         console.log(chalk.red(`\n--- La base de datos original no existe: ${baseDeDatosOriginal} ---`));
-        const carpetaBackups = './backups';
+        const carpetaBackups = '../../backups';
         const archivos = fs.readdirSync(carpetaBackups);
         const backupsDB = archivos.filter(file => file.endsWith('.db'));
         if (backupsDB.length > 0) {
@@ -92,7 +92,7 @@ function intentarHacerBackup() {
 }
 
 function hacerBackup() {
-    const carpetaBackups = './backups';
+    const carpetaBackups = '../../backups';
     const archivos = fs.readdirSync(carpetaBackups);
     const backupsDB = archivos.filter(file => file.endsWith('.db'));
 

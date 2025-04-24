@@ -39,7 +39,7 @@ if [[ -f ../../Cajero/Codigo_Central/cajeroMenu.js ]]; then
         # Verificar existencia de backupEmergencia.js
         if [[ -f ../../Apartado_Backup/backupEmergencia.js ]]; then
             echo "Cierre del cajero detectado, iniciando backup de emergencia..."
-            node ./Apartado_Backup/backupEmergencia.js
+            node ../../Apartado_Backup/backupEmergencia.js
             read -p "Presiona Enter para continuar..."
         else
             echo "No se pudo hacer el backup de cierre del cajero."

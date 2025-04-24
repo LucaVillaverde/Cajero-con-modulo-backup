@@ -23,7 +23,7 @@ process.stdin.on('keypress', (ch, key) => {
     }
 });
 
-const baseDeDatosOriginal = './miBaseDeDatos.db'; // Asegúrate de que esta ruta sea correcta
+const baseDeDatosOriginal = '../../miBaseDeDatos.db'; // Asegúrate de que esta ruta sea correcta
 
 export let cedulaGuardada = false;
 
