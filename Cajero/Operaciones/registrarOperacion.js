@@ -27,7 +27,7 @@ export function registrarOperacion(cedulaGuardada, tipo, monto, destino) {
             console.log(chalk.green("\n--- Transacción registrada con éxito ---\n"));
             setTimeout(() => {
                 console.clear();
-                consulta(tipo);
+                consulta(tipo, false, cedulaGuardada);
             }, 2000);
         }
     });

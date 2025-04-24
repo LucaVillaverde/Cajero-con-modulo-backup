@@ -1,5 +1,5 @@
 import chalk from "chalk";
-import { rl, db, cajeroMenu, reinicio } from "../cajeroMenu.js";
+import { rl, db, cajeroMenu, reinicio, cedulaGuardada } from "../cajeroMenu.js";
 import ingreso from '../../Operaciones/ingreso.js';
 
 
@@ -78,7 +78,7 @@ export function cajeroIngresoMenu() {
                 break;
             case 6:
                 console.clear();
-                cajero();
+                cajeroMenu();
                 break;
             case 7:
                 console.log(chalk.cyan.bgBlack("\n--- Gracias por usar el cajero ---"));

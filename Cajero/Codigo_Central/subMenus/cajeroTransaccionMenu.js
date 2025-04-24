@@ -1,5 +1,5 @@
 import chalk from "chalk";
-import { rl, db, cajeroMenu, reinicio } from "../cajeroMenu.js";
+import { rl, db, cajeroMenu, reinicio, cedulaGuardada } from "../cajeroMenu.js";
 import transaccion from '../../Operaciones/transaccion.js';
 
 
