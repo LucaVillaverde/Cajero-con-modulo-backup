@@ -1,5 +1,5 @@
 import chalk from "chalk";
-import { rl } from "../../Cajero/Codigo_Central/cajero.js";
+import { rl } from "../../Cajero/Codigo_Central/cajeroMenu.js";
 import { menuAdministrador } from "../menuAdministrador.js";
 import { pedirCedulaActual } from "./Peticiones/pedirCedulaActual.js";
 

@@ -1,4 +1,4 @@
-import { rl, db } from "../../../Cajero/Codigo_Central/cajero.js";
+import { rl, db } from "../../../Cajero/Codigo_Central/cajeroMenu.js";
 import chalk from "chalk";
 import { editarCuentaMenu } from "../editarCuentaMenu.js";
 import { editarPin } from "./editarPin.js";

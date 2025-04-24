@@ -1,6 +1,7 @@
 import chalk from "chalk";
 import { registrarOperacion } from "./registrarOperacion.js";
-import { cajeroIngreso, db, cedulaGuardada } from "../Codigo_Central/cajero.js";
+import { db, cedulaGuardada } from "../Codigo_Central/cajeroMenu.js";
+import { cajeroIngresoMenu } from "../Codigo_Central/subMenus/cajeroIngresoMenu.js";
 
 
 /** 
@@ -25,14 +26,14 @@ export function ingreso(cantidad) {
     console.clear();
     if (cantidad < 500) {
         console.error('\n--- El monto ingresado debe ser igual o mayor a 500. ---\n');
-        setTimeout(cajeroIngreso, 2000);
+        setTimeout(cajeroIngresoMenu, 2000);
         return;
     } else {
         db.get('SELECT Saldo FROM Cuenta WHERE Cedula = ?', [cedulaGuardada], (err, row) => {
             if (err || !row) {
                 console.clear();
                 console.error('Error al obtener el saldo de la base de datos.');
-                setTimeout(cajeroIngreso, 2000);
+                setTimeout(cajeroIngresoMenu, 2000);
                 return;
             }
 
@@ -42,13 +43,12 @@ export function ingreso(cantidad) {
             db.run('UPDATE Cuenta SET Saldo = ? WHERE Cedula = ?', [saldoActualizado, cedulaGuardada], (err) => {
                 if (err) {
                     console.error('Error al actualizar el saldo de la base de datos:', err.message);
-                    setTimeout(cajeroIngreso, 2000);
+                    setTimeout(cajeroIngresoMenu, 2000);
                 } else {
                     registrarOperacion(cedulaGuardada, 'ingreso', cantidad, 'Ninguno');
                     console.log(chalk.green("\n--- Ingreso realizado con éxito ---"));
                     console.log(chalk.green("\n--- Su saldo actualizado: " + saldoActualizado + "$ ---"));
                     console.log(chalk.green("\n--- Gracias por utilizar nuestros servicios ---\n"));
-                    console.log(chalk.green(`\n--- ${cedulaGuardada} ---\n`));
                 }
             });
         });

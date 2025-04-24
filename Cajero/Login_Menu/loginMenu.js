@@ -1,6 +1,6 @@
 import chalk from "chalk";
 import bcrypt from "bcrypt";
-import { rl, db, cajero } from "../Codigo_Central/cajero.js";
+import { rl, db, cajeroMenu } from "../Codigo_Central/cajeroMenu.js";
 import { menuAdministrador } from "../../Menu_de_Administracion/menuAdministrador.js";
 
 let errores = 0;
@@ -89,7 +89,7 @@ function solicitarPin(cedula) {
             if (verif) {
                 console.clear();
                 console.log(chalk.green("\n--- Bienvenido " + rows.Nombre + " ---\n"));
-                cajero(cedula);
+                cajeroMenu(cedula);
             } else {
                 console.clear();
                 console.log(chalk.red("\n--- Pin incorrecto ---\n"));

@@ -1,9 +1,11 @@
 import chalk from 'chalk';
-import { cajeroTransaccion, cajeroRetiro, cajeroIngreso, cajero, reinicio, rl } from '../Codigo_Central/cajero.js';
+import { cajeroMenu, reinicio, rl } from '../Codigo_Central/cajeroMenu.js';
 import { eliminarCuenta } from '../../Menu_de_Administracion/Eliminacion/eliminarCuenta.js';
 import { crearCuenta } from '../../Menu_de_Administracion/Creacion/crearCuenta.js';
 import { menuAdministrador } from '../../Menu_de_Administracion/menuAdministrador.js';
-
+import { cajeroRetiroMenu } from '../Codigo_Central/subMenus/cajeroRetiroMenu.js';
+import { cajeroIngresoMenu } from '../Codigo_Central/subMenus/cajeroIngresoMenu.js';
+import { cajeroTransaccionMenu } from '../Codigo_Central/subMenus/cajeroTransaccionMenu.js';
 
 /**
  * 
@@ -54,13 +56,13 @@ function consultaAdmin(tipo, cedula) {
 /**
 La funcion consulta(tipo) se encarga de mostrar un menu segun la informacion que tenga la variable "tipo" (tipo es un string).
 
-Si "tipo" es "transaccion", se muestra un menu con opciones para realizar otra transaccion [llamando asi a la funcion cajeroTransaccion()], ir al menu principal [llamando a cajero()] o cerrar sesion [llamando a reinicio()].
+Si "tipo" es "transaccion", se muestra un menu con opciones para realizar otra transaccion [llamando asi a la funcion cajeroTransaccion()], ir al menu principal [llamando a cajeroMenu()] o cerrar sesion [llamando a reinicio()].
 
 Si "tipo" es "retiro", se muestra un menu con opciones para realizar otro retiro [llamando asi a la funcion cajeroRetiro()], ir al menu principal o cerrar sesion.
 
 Si "tipo" es "ingreso", se muestra un menu con opciones para realizar otro ingreso [llamando asi a la funcion cajeroIngreso()], ir al menu principal o cerrar sesion.
 
-SI "tipo" no es ninguna de las tres opciones anteriores, se muestra un mensaje de error y se carga el menu principal del cajero [llamando asi a la funcion cajero()].
+SI "tipo" no es ninguna de las tres opciones anteriores, se muestra un mensaje de error y se carga el menu principal del cajero [llamando asi a la funcion cajeroMenu()].
 */
 
 export function consulta(tipo, admin, cedula) {
@@ -78,16 +80,16 @@ export function consulta(tipo, admin, cedula) {
     };
 
     const funciones = {
-        transaccion: cajeroTransaccion,
-        retiro: cajeroRetiro,
-        ingreso: cajeroIngreso,
+        transaccion: cajeroTransaccionMenu,
+        retiro: cajeroRetiroMenu,
+        ingreso: cajeroIngresoMenu,
     };
 
     if (!mensajes[tipo] || !funciones[tipo]) {
         console.log(chalk.red("\n--- No se ha definido el tipo de proceso a realizar ---\n"));
         setTimeout(() => {
             console.clear();
-            cajero();
+            cajeroMenu();
         }, 2000);
         return;
     }
@@ -104,7 +106,7 @@ export function consulta(tipo, admin, cedula) {
             case 1:
                 funciones[tipo](); break;
             case 2:
-                cajero(); break;
+                cajeroMenu(); break;
             case 3:
                 reinicio(); break;
             default:

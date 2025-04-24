@@ -1,5 +1,5 @@
 import chalk from "chalk";
-import { rl, db } from "../../Cajero/Codigo_Central/cajero.js";
+import { rl, db } from "../../Cajero/Codigo_Central/cajeroMenu.js";
 import bcrypt from "bcrypt";
 import { menuAdministrador } from "../menuAdministrador.js";
 import consulta from "../../Cajero/Consultas_no_admins/consulta.js";

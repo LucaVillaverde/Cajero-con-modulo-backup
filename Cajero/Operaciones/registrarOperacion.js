@@ -1,5 +1,5 @@
 import chalk from "chalk";
-import { db } from "../Codigo_Central/cajero.js";
+import { db } from "../Codigo_Central/cajeroMenu.js";
 import { consulta } from "../Consultas_no_admins/consulta.js";
 
 

@@ -2,7 +2,7 @@ import chalk from "chalk";
 import bcrypt from "bcrypt";
 import editarCuentaMenu from "../editarCuentaMenu.js";
 import { central_de_Edicion } from "../central_de_Edicion.js";
-import { rl, db } from "../../../Cajero/Codigo_Central/cajero.js";
+import { rl, db } from "../../../Cajero/Codigo_Central/cajeroMenu.js";
 
 
 

@@ -1,6 +1,7 @@
 import chalk from "chalk";
 import { registrarOperacion } from "./registrarOperacion.js";
-import { cajeroTransaccion, db, cedulaGuardada } from "../Codigo_Central/cajero.js";
+import { db, cedulaGuardada } from "../Codigo_Central/cajeroMenu.js";
+import { cajeroTransaccionMenu } from "../Codigo_Central/subMenus/cajeroTransaccionMenu.js";
 
 
 
@@ -26,7 +27,7 @@ export function transaccion(cantidad, destino) {
     console.error(
       "\n--- No puedes realizar una transacción a tu propia cuenta. ---\n"
     );
-    setTimeout(cajeroTransaccion, 2000);
+    setTimeout(cajeroTransaccionMenu, 2000);
     return;
   } else {
     db.get(
@@ -36,7 +37,7 @@ export function transaccion(cantidad, destino) {
         if (err || !row) {
           console.clear();
           console.error("Error al obtener el saldo de la base de datos.");
-          setTimeout(cajeroTransaccion, 2000);
+          setTimeout(cajeroTransaccionMenu, 2000);
           return;
         }
 
@@ -50,7 +51,7 @@ export function transaccion(cantidad, destino) {
               "\n--- El monto ingresado es mayor al monto de la cuenta bancaria ---"
             )
           );
-          setTimeout(cajeroTransaccion, 2000);
+          setTimeout(cajeroTransaccionMenu, 2000);
           return;
         } else {
           db.get(
@@ -62,7 +63,7 @@ export function transaccion(cantidad, destino) {
                 console.error(
                   "Error al obtener el destino de la base de datos."
                 );
-                setTimeout(cajeroTransaccion, 2000);
+                setTimeout(cajeroTransaccionMenu, 2000);
                 return;
               } else {
                 db.get(
@@ -74,7 +75,7 @@ export function transaccion(cantidad, destino) {
                       console.error(
                         "Error al obtener el saldo de la base de datos."
                       );
-                      setTimeout(cajeroTransaccion, 2000);
+                      setTimeout(cajeroTransaccionMenu, 2000);
                       return;
                     } else {
                       const saldoDestino = row.Saldo;

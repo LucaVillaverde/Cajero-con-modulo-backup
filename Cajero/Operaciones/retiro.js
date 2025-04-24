@@ -1,6 +1,7 @@
 import chalk from "chalk";
 import { registrarOperacion } from "./registrarOperacion.js";
-import { cajeroRetiro, db, cedulaGuardada } from "../Codigo_Central/cajero.js";
+import { db, cedulaGuardada } from "../Codigo_Central/cajeroMenu.js";
+import { cajeroRetiroMenu } from "../Codigo_Central/subMenus/cajeroRetiroMenu.js";
 
 
 /** 
@@ -25,7 +26,7 @@ export function retiro(cantidad) {
         if (err || !row) {
             console.clear();
             console.error('Error al obtener el saldo de la base de datos.');
-            setTimeout(cajeroRetiro, 2000);
+            setTimeout(cajeroRetiroMenu, 2000);
             return;
         }
     
@@ -35,7 +36,7 @@ export function retiro(cantidad) {
         if (cantidad > saldoActual) {
             console.clear();
             console.log(chalk.red("\n--- El monto ingresado es mayor al monto de la cuenta bancaria ---"));
-            setTimeout(cajeroRetiro, 2000);
+            setTimeout(cajeroRetiroMenu, 2000);
             return;
         }
     

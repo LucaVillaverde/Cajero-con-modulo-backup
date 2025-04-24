@@ -20,11 +20,11 @@ IF EXIST ./Verificadores_de_Integridad/verificarDependencias.js (
 
 cls
 
-IF EXIST ./Cajero/Codigo_Central/cajero.js (
+IF EXIST ./Cajero/Codigo_Central/cajeroMenu.js (
 	IF EXIST ./Apartado_Backup/backup.js (
 		echo Iniciando Programa...
 		start cmd /k "cd /d %~dp0 && node ./Apartado_Backup/backup.js"
-		call node ./Cajero/Codigo_Central/cajero.js
+		call node ./Cajero/Codigo_Central/cajeroMenu.js
 		pause
 		cls
 		if EXIST ./Apartado_Backup/backupEmergencia.js (

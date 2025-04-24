@@ -1,7 +1,7 @@
 import chalk from "chalk";
 import { editarCuentaMenu } from "../editarCuentaMenu.js";
 import { pedirPinActual } from "./pedirPinActual.js";   
-import { rl, db } from "../../../Cajero/Codigo_Central/cajero.js";
+import { rl, db } from "../../../Cajero/Codigo_Central/cajeroMenu.js";
 
 
 /**
