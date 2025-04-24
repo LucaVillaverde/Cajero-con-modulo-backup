@@ -7,10 +7,11 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Ahora puedes resolver rutas correctamente
+// Constantes
 const baseDeDatosOriginal = path.resolve(__dirname, "../miBaseDeDatos.db");
 const carpetaBackups = path.resolve(__dirname, "../backups");
 const tablasRequeridas = ["Cuenta", "Transacciones"];
+const LIMITE_RESPALDOS = 10;
 
 // Verifica y crea el directorio de respaldos
 async function verificarDirectorio() {
@@ -22,23 +23,20 @@ async function verificarDirectorio() {
             return true;
         } catch (error) {
             console.error(chalk.red("\n--- Error al crear la carpeta de respaldos:", error.message, "---\n"));
-            console.log(chalk.cyan.bgBlack("\n--- Intentando nuevamente en 2 segundos ---\n"));
-            await new Promise((resolve) => setTimeout(resolve, 2000));
-            return verificarDirectorio();
+            return false;
         }
     } else {
         console.log(chalk.greenBright.bgBlack("\n--- Directorio de respaldos encontrado ---\n"));
-        const archivos = fs.readdirSync(carpetaBackups);
+        const archivos = await fs.promises.readdir(carpetaBackups);
         const backupsDB = archivos.filter(file => file.endsWith(".db"))
             .sort((a, b) => fs.statSync(path.join(carpetaBackups, b)).mtime - fs.statSync(path.join(carpetaBackups, a)).mtime);
-        
-        // Si hay más de 10 backups, elimina los más antiguos
-        if (backupsDB.length > 10) {
-            const backupsAEliminar = backupsDB.slice(10); // Mantén los 10 más recientes y elimina el resto
-        
+
+        // Si hay más de LIMITE_RESPALDOS, elimina los más antiguos
+        if (backupsDB.length > LIMITE_RESPALDOS) {
+            const backupsAEliminar = backupsDB.slice(LIMITE_RESPALDOS); // Mantén los más recientes
             for (const backup of backupsAEliminar) {
                 try {
-                    fs.unlinkSync(path.join(carpetaBackups, backup));
+                    await fs.promises.unlink(path.join(carpetaBackups, backup));
                     console.log(chalk.red(`\n--- Eliminado backup antiguo: ${backup} ---\n`));
                 } catch (error) {
                     console.error(chalk.yellow(`\n--- Error al eliminar ${backup}: ${error.message} ---\n`));
@@ -76,19 +74,22 @@ async function verificarTablasBaseDeDatos(ruta) {
     });
 }
 
+
+
 // Restaurar desde un backup válido
 async function colocarBackupBueno() {
     console.log(chalk.cyan.bgBlack("\n--- Buscando backups válidos... ---\n"));
 
-    const archivos = fs.readdirSync(carpetaBackups);
-    const backupsDB = archivos.filter(file => file.endsWith(".db")).sort().reverse();
+    const archivos = await fs.promises.readdir(carpetaBackups);
+    const backupsDB = archivos.filter(file => file.endsWith(".db"))
+        .sort((a, b) => fs.statSync(path.join(carpetaBackups, b)).mtime - fs.statSync(path.join(carpetaBackups, a)).mtime);
 
     for (const backup of backupsDB) {
         const backupPath = path.join(carpetaBackups, backup);
         const valido = await verificarTablasBaseDeDatos(backupPath);
         if (valido) {
             try {
-                fs.copyFileSync(backupPath, baseDeDatosOriginal);
+                await fs.promises.copyFile(backupPath, baseDeDatosOriginal);
                 console.log(chalk.green(`\n--- Restaurado desde backup: ${backup} ---\n`));
                 return true;
             } catch (error) {
@@ -128,6 +129,54 @@ async function manejarBaseDeDatos() {
         console.log(chalk.cyan.bgBlack("\n--- Ahora puede iniciar el Lanzador.bat ---\n"));
     }
 }
+
+// Función para crear las tablas si no existen
+async function crearTablas() {
+    return new Promise((resolve, reject) => {
+        const db = new sqlite3.Database(baseDeDatosOriginal, (err) => {
+            if (err) {
+                console.error(chalk.red('Error al conectar con la base de datos:', err.message));
+                return reject(err);
+            }
+        });
+
+        db.serialize(() => {
+            db.run(`
+                CREATE TABLE IF NOT EXISTS Cuenta (
+                    Nombre TEXT NOT NULL,
+                    Apellido TEXT NOT NULL,
+                    Cedula TEXT PRIMARY KEY,
+                    PIN TEXT NOT NULL,
+                    Saldo INTEGER NOT NULL DEFAULT 0
+                )
+            `, () => {
+                db.run(`
+                    CREATE TABLE IF NOT EXISTS Transacciones (
+                        ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                        Cedula TEXT NOT NULL,
+                        Tipo TEXT NOT NULL,
+                        Monto INTEGER NOT NULL,
+                        Destino TEXT,
+                        Fecha TEXT NOT NULL
+                    )
+                `, () => {
+                    db.close((err) => {
+                        if (err) {
+                            console.error(chalk.red('Error al cerrar la conexión con la base de datos:', err.message));
+                            return reject(err);
+                        } else {
+                            console.log(chalk.green('\n--- Base de datos creada correctamente ---\n'));
+                            console.log(chalk.cyan.bgBlack('\n--- Ahora puede iniciar el Lanzador.bat ---\n'));
+                            resolve();
+                        }
+                    });
+                });
+            });
+        });
+    });
+}
+
+
 
 // Ejecución principal
 (async () => {
