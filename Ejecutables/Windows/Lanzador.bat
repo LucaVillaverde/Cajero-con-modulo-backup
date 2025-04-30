@@ -23,7 +23,7 @@ cls
 IF EXIST ../../Cajero/Codigo_Central/cajeroMenu.js (
 	IF EXIST ../../Apartado_Backup/backup.js (
 		echo Iniciando Programa...
-		start cmd /k "cd /d %~dp0 && node ./Apartado_Backup/backup.js"
+		start cmd /k "cd /d %~dp0 && node ../../Apartado_Backup/backup.js"
 		call node ../../Cajero/Codigo_Central/cajeroMenu.js
 		pause
 		cls
