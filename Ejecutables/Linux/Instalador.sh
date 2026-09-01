@@ -3,13 +3,13 @@
 cd "$(dirname "$0")"
 
 # Versión mínima requerida
-MIN_NODE_VERSION="20.17.0"
+MIN_NODE_VERSION="22.0.0"
 MIN_NPM_VERSION="11.2.0"
 
 # Verificar Node.js
 if ! command -v node &> /dev/null; then
     echo "Node.js no está instalado. Instalando..."
-    curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+    curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
     sudo apt-get install -y nodejs
 fi
 
@@ -20,7 +20,7 @@ NODE_VERSION_NUM="${NODE_VERSION#v}"
 # Comparar versión de Node
 if [ "$(printf '%s\n' "$MIN_NODE_VERSION" "$NODE_VERSION_NUM" | sort -V | head -n1)" != "$MIN_NODE_VERSION" ]; then
     echo "Node.js es menor a $MIN_NODE_VERSION. Actualizando..."
-    curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+    curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
     sudo apt-get install -y nodejs
 fi
 
