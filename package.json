@@ -16,7 +16,6 @@
   "description": "",
   "dependencies": {
     "bcrypt": "^5.1.1",
-    "better-sqlite3": "^11.9.1",
     "chalk": "^5.4.1",
     "fs": "^0.0.1-security",
     "keypress": "^0.2.1",
