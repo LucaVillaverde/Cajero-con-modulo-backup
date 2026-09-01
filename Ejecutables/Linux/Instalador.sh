@@ -2,55 +2,46 @@
 
 cd "$(dirname "$0")"
 
-# Verificar si Node.js está instalado
+# Versión mínima requerida
+MIN_NODE_VERSION="20.17.0"
+MIN_NPM_VERSION="11.2.0"
+
+# Verificar Node.js
 if ! command -v node &> /dev/null; then
-    echo "Node.js no está instalado."
-    echo "Descargalo desde su sitio oficial: https://nodejs.org/es"
-    xdg-open "https://nodejs.org/es" 2>/dev/null || echo "Abrí el link manualmente."
-    read -p "Presiona ENTER para salir..."
-    exit 1
+    echo "Node.js no está instalado. Instalando..."
+    curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+    sudo apt-get install -y nodejs
 fi
 
 NODE_VERSION=$(node -v)
 echo "Node.js encontrado: $NODE_VERSION"
-
-# Quitar la "v" del inicio de la versión
 NODE_VERSION_NUM="${NODE_VERSION#v}"
 
-# Comparar con 20.17.0
-MIN_NODE_VERSION="20.17.0"
+# Comparar versión de Node
 if [ "$(printf '%s\n' "$MIN_NODE_VERSION" "$NODE_VERSION_NUM" | sort -V | head -n1)" != "$MIN_NODE_VERSION" ]; then
-    echo "Se requiere Node.js v$MIN_NODE_VERSION o superior."
-    echo "Actualizá tu versión: https://nodejs.org/es"
-    xdg-open "https://nodejs.org/es" 2>/dev/null || echo "Abrí el link manualmente."
-    read -p "Presiona ENTER para salir..."
-    exit 1
+    echo "Node.js es menor a $MIN_NODE_VERSION. Actualizando..."
+    curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+    sudo apt-get install -y nodejs
 fi
 
-# Verificar si npm está instalado
+# Verificar npm
 if ! command -v npm &> /dev/null; then
-    echo "npm no está instalado. Intentando instalarlo..."
-    sudo apt update && sudo apt install -y npm
-    if ! command -v npm &> /dev/null; then
-        echo "Fallo la instalación de npm."
-        exit 1
-    fi
+    echo "npm no está instalado. Instalando..."
+    sudo apt-get install -y npm
 fi
 
 NPM_VERSION=$(npm -v)
 echo "npm encontrado: $NPM_VERSION"
 
-# Comparar con 11.2.0
-MIN_NPM_VERSION="11.2.0"
+# Comparar versión de npm
 if [ "$(printf '%s\n' "$MIN_NPM_VERSION" "$NPM_VERSION" | sort -V | head -n1)" != "$MIN_NPM_VERSION" ]; then
-    echo "Se requiere npm v$MIN_NPM_VERSION o superior."
-    echo "Actualizando npm..."
-    npm install -g npm
+    echo "npm es menor a $MIN_NPM_VERSION. Actualizando..."
+    sudo npm install -g npm
 fi
 
 clear
 
-# Verificar node_modules y dependencias
+# Verificar dependencias
 if [ -d "../../node_modules" ]; then
     echo "La carpeta node_modules existe."
     echo "Verificando dependencias..."

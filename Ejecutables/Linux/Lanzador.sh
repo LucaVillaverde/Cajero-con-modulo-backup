@@ -31,7 +31,11 @@ clear
 if [[ -f ../../Cajero/Codigo_Central/cajeroMenu.js ]]; then
     if [[ -f ../../Apartado_Backup/backup.js ]]; then
         echo "Iniciando Programa..."
-        gnome-terminal -- bash -c "cd \"$(dirname "$0")\" && node ../../Apartado_Backup/backup.js; exec bash"
+        if command -v gnome-terminal &> /dev/null; then
+            gnome-terminal -- bash -c "cd \"$(dirname "$0")\" && node ../../Apartado_Backup/backup.js; exec bash"
+        else
+            bash -c "cd \"$(dirname "$0")\" && node ../../Apartado_Backup/backup.js" &
+        fi
         node ../../Cajero/Codigo_Central/cajeroMenu.js
         read -p "Presiona Enter para continuar..."
         clear
