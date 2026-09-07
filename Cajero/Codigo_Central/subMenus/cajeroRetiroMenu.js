@@ -53,9 +53,9 @@ export function cajeroRetiroMenu() {
             case 4:
                 rl.question("Ingrese el monto a retirar: ", (input) => {
                     const monto = parseInt(input);
-                    if (monto <= 0 || monto > 50000 || isNaN(monto)) {
+                    if (monto <= 499 || monto > 50000 || isNaN(monto)) {
                         console.clear();
-                        console.log(chalk.red("\n--- Monto no válido. ---"));
+                        console.log(chalk.red("\n--- Monto no válido minimo 500$ y maximo 50000$. ---"));
                         setTimeout(cajeroRetiroMenu, 2000);
                     } else {
                         retiro(monto);
