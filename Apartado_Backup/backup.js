@@ -149,27 +149,28 @@ function verificarDirectorio() {
     }
 }
 
-// Configuración de keypress para capturar eventos
-keypress(process.stdin);
+if (process.stdin.isTTY) {
+    keypress(process.stdin);
+    process.stdin.setRawMode(true);
+    process.stdin.resume();
 
-// Cuando se presione una tecla, la función se activará
-process.stdin.on('keypress', (ch, key) => {
-    if (key && key.name === 'b') {
-        llamadasManual++;
-        let mensaje = true;
-        intentarHacerBackup(mensaje);
-    }
-    if (key && key.name === 'escape') {
-        console.log(chalk.cyan.bgBlack('\n--- Saliendo... ---'));
-        process.exit();
-    }
-});
+    console.log(chalk.cyan.bgBlack('\n--- Presiona "b" para hacer un backup manual ---\n'));
+    console.log(chalk.cyan.bgBlack('\n--- Presiona "esc" para salir ---\n'));
+    console.log(chalk.cyan.bgBlack('\n--- Esperando a que pase una hora para el backup automatico ---\n'));
 
+    process.stdin.on('keypress', (ch, key) => {
+        if (key && key.name === 'b') {
+            llamadasManual++;
+            let mensaje = true;
+            intentarHacerBackup(mensaje);
+        }
+        if (key && key.name === 'escape') {
+            console.log(chalk.cyan.bgBlack('\n--- Saliendo... ---'));
+            process.exit();
+        }
+    })
+} else {
+    console.log(chalk.yellow('\n--- Modo no interactivo detectado ---\n'));
+    console.log(chalk.cyan('\n--- Solo se ejecutarán backups automaticos ---\n'));
+}
 
-process.stdin.setRawMode(true);
-process.stdin.resume();
-
-
-console.log(chalk.cyan.bgBlack('\n--- Presiona "b" para hacer un backup manual ---\n'));
-console.log(chalk.cyan.bgBlack('\n--- Presiona "esc" para salir ---\n'));
-console.log(chalk.cyan.bgBlack('\n--- Esperando a que pase una hora para el backup automatico ---\n'));
