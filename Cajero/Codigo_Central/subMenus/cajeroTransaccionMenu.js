@@ -20,7 +20,7 @@ import transaccion from '../../Operaciones/transaccion.js';
 
 export function cajeroTransaccionMenu() {
     console.clear();
-    console.log(chalk.cyan.bgBlack("\n--- Ingrese 1 para indicar el monto de la transacción y destinatario (cedula) ---"));
+    console.log(chalk.cyan.bgBlack("\n--- Ingrese 1 para indicar el destinatario (cedula) y el monto de la transacción ---"));
     console.log(chalk.cyan.bgBlack("\n--- Ingrese 2 para ver el saldo disponible ---"));
     console.log(chalk.cyan.bgBlack("\n--- Ingrese 3 para volver atras ---"));
     console.log(chalk.cyan.bgBlack("\n--- Ingrese 4 para cerrar sesion ---\n"));
@@ -39,20 +39,39 @@ export function cajeroTransaccionMenu() {
     
         switch (opcion) {
             case 1:
-                rl.question("Indique el monto de la transacción: ", (input) => {
-                    const monto = parseInt(input);
-                    if (monto <= 0 || monto > 50000 || isNaN(monto)) {
+                rl.question(chalk.cyanBright("\nIndique la cedula del destinatario: "), (input) => {
+                    const destino = input.trim();
+
+                    if(!/^\d{7,11}-\d$/.test(destino)) {
                         console.clear();
-                        console.log(chalk.red("\n--- Monto no válido. ---"));
+                        console.log(chalk.red("\n--- La cedula debe tener el formato correcto (ej: 12345678-9). ---\n"));
                         setTimeout(cajeroTransaccionMenu, 2000);
-                    } else {
-                        console.clear();
-                        rl.question("Indique el destino de la transacción: ", (input) => {
-                            const destino = input;
-                            transaccion(monto, destino);
-                        })
+                        return;
                     }
-                });
+
+                    if (destino === cedulaGuardada) {
+                        console.clear();
+                        console.log(chalk.redBright("\n--- No puedes realizar una transacción a tu propia cuenta ---\n"));
+                        setTimeout(cajeroTransaccionMenu, 2000);
+                        return;
+                    }
+
+                    console.clear();
+
+                    console.log(chalk.cyan.bgBlack("\n--- Indique monto de la transacción para " + destino + " ---"));
+                    rl.question(chalk.cyanBright("\nIndique el monto de la transacción: "), (input) => {
+                        const monto = parseInt(input);
+                        if (monto <= 0 || monto > 50000 || isNaN(monto)) {
+                            console.clear();
+                            let mensaje = monto <= 0 ? "No podemos realizar transacciones con un monto negativo o neutro." : monto > 50000 ? "No podemos realizar transacciones con un monto mayor a 50.000$." : "Monto no valido, asegurese de haber ingresado un numero.";
+                            console.log(chalk.redBright(`\n--- ${mensaje} ---\n`));
+                            setTimeout(cajeroTransaccionMenu, 2000);
+                        } else {
+                            console.clear();
+                            transaccion(monto, destino);
+                        }
+                    })
+                })
                 break;
             case 2:
                 db.get('SELECT Saldo FROM Cuenta WHERE Cedula = ?', [cedulaGuardada], (err, row) => {
