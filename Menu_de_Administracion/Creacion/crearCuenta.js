@@ -3,7 +3,6 @@ import { rl, db } from "../../Cajero/Codigo_Central/cajeroMenu.js";
 import bcrypt from "bcrypt";
 import { menuAdministrador } from "../menuAdministrador.js";
 import consulta from "../../Cajero/Consultas_no_admins/consulta.js";
-// import { PINTesting, cedulaTesting, nombreTesting, apellidoTesting } from "../../Cajero/Codigo_Central/testingMenu.js";
 
 let Admin = true;
 let tipo = "crearCuenta";
@@ -15,51 +14,6 @@ let tipo = "crearCuenta";
 // Se muestra un mensaje de exito y se vuelve a llamar a la funcion menuAdministrador().
 
 function ingresarPin(cedula, nombre, apellido) {
-    if (cedula === cedulaTesting && nombre === nombreTesting && apellido === apellidoTesting) {
-        let hashedPIN = bcrypt.hashSync(PINTesting, 10);
-        try {
-            db.run('INSERT INTO Cuenta (Nombre, Apellido, Cedula, PIN, Saldo) VALUES (?, ?, ?, ?, ?)', [nombre, apellido, cedula, hashedPIN, 0], (err) => {
-                if (err) {
-                    console.clear();
-                    console.log(chalk.red("\n--- Error al crear la cuenta en la base de datos. ---\n"));
-                    return;
-                } else {
-                    console.clear();
-                    console.log(chalk.cyan("\n--- Verificando la creacion de la cuenta ---\n"));
-                    db.get('SELECT Cedula, Nombre, Apellido, PIN FROM Cuenta WHERE Cedula = ?', [cedula], (err, row) => {
-                        if (err || !row) {
-                            console.clear();
-                            let mensaje = err ? "\n--- Error al consultar la base de datos ---\n" : "\n--- No se ha encontrado la cuenta en la base de datos ---\n";
-                            console.log(chalk.red(`${mensaje}`));
-                            return;
-                        }
-                        const datosCoinciden = row.Cedula === cedula && row.Nombre === nombre && row.Apellido === apellido && bcrypt.compareSync(PINTesting, row.PIN);
-                        if (datosCoinciden) {
-                            console.clear();
-                            console.log(chalk.green("\n--- La creacion de la cuenta fue exitosa ---\n"));
-                            console.log(chalk.cyan("\n--- Datos de la cuenta ---\n"));
-                            console.log(chalk.cyan(`\nCedula: ${row.Cedula}\n`));
-                            console.log(chalk.cyan(`\nNombre: ${row.Nombre}\n`));
-                            console.log(chalk.cyan(`\nApellido: ${row.Apellido}\n`));
-                            console.log(chalk.cyan(`\nPIN: 1234\n`));
-                            console.log(chalk.cyan(`\nSaldo: ${row.Saldo}\n`));
-                            console.log(chalk.yellow("\n--- Continuando con el testeo de edicion de la cuenta ---\n"));
-                            setTimeout(() => {
-                                
-                            }, 5000);
-                            return;
-                        }
-                    })
-                }
-            });
-        } catch (error) {
-            console.clear();
-            console.log(chalk.red("\n--- Error al crear la cuenta en la base de datos. ---\n"));
-            setTimeout(menuAdministrador, 1500);
-            return;
-        }
-        return;
-    }
     console.clear();
     console.log(chalk.cyan.bgBlack("\n--- Ingrese el Pin para la cuenta por favor ---\n"));
     rl.question("Ingrese el Pin: ", (input) => {
@@ -92,10 +46,6 @@ function ingresarPin(cedula, nombre, apellido) {
 }
 
 function ingresarApellido(cedula, nombre) {
-    if (cedula === cedulaTesting && nombre === nombreTesting) {
-        ingresarPin(cedula, nombreTesting, apellidoTesting);
-        return;
-    }
     console.clear();
     console.log(chalk.cyan.bgBlack("\n--- Ingrese el apellido para la cuenta por favor--- \n"));
     rl.question("Ingrese el apellido: ", (input) => {
@@ -114,10 +64,6 @@ function ingresarApellido(cedula, nombre) {
 }
 
 function ingresarNombre(cedula) {
-    if (cedula === cedulaTesting) {
-        ingresarApellido(cedula, nombreTesting);
-        return;
-    }
     console.clear();
     console.log(chalk.cyan.bgBlack("\n--- Ingrese el nombre para la cuenta por favor ---\n"));
     rl.question("Ingrese el nombre: ", (input) => {
@@ -135,11 +81,7 @@ function ingresarNombre(cedula) {
     });
 }
 
-function ingresarCedula(cedulaTesting) {
-    if (cedulaTesting) {
-        ingresarNombre(cedulaTesting);
-        return;
-    }
+function ingresarCedula() {
     console.log(chalk.cyan.bgBlack("\n--- Ingrese la Cedula por favor ---\n"));
     rl.question("Ingrese la Cedula: ", (input) => {
         const cedula = input.trim();
