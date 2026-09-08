@@ -9,8 +9,12 @@ import keypress from 'keypress';
 let llamadas = 0;
 let llamadasManual = 0;
 
+// cron.schedule('0 0 * * * *', () => {
+//     llamadas++;
+//     verificarDirectorio();
+// });
 
-cron.schedule('0 0 * * * *', () => {
+cron.schedule('* * * * *', () => {
     llamadas++;
     verificarDirectorio();
 });
