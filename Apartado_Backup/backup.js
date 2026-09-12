@@ -87,7 +87,7 @@ function hacerBackup(mensaje) {
     // Mensajes
     console.log('================================================');
     if (mensaje) {
-        logConHora('--- Forzando el inicio del backup ---', chalk.yellow);
+        logConHora('--- Ejecutando backup manual ---', chalk.yellow);
     } else {
         logConHora('--- Inicio automático del backup ---', chalk.yellow);
         if (llamadas === 0) llamadas++;
@@ -120,17 +120,17 @@ function hacerBackup(mensaje) {
 // Función para hacer backup
 function intentarHacerBackup(mensaje) {
     console.clear();
+    console.log('================Verificando base de datos en uso================');
     if (!fs.existsSync(baseDeDatosOriginal)) {
-        console.log('================================================');
         logConHora(`--- La base de datos original no existe: ${baseDeDatosOriginal} ---`, chalk.red);
         const carpetaBackups = '../../backups';
         const archivos = fs.readdirSync(carpetaBackups);
         const backupsDB = archivos.filter(file => file.endsWith('.db'));
         if (backupsDB.length > 0) {
             const ultimoBackup = backupsDB[backupsDB.length - 1];
-            logConHora(`--- Base de datos original encontrada: ${ultimoBackup} ---`, chalk.green);
+            logConHora(`--- Respaldo de la base de datos mas reciente: ${ultimoBackup} ---`, chalk.green);
             fs.copyFileSync(path.join(carpetaBackups, ultimoBackup), baseDeDatosOriginal);
-            logConHora(`--- Base de datos original copiada exitosamente: ${baseDeDatosOriginal} ---`, chalk.green);
+            logConHora(`--- Base de datos original reestablecida exitosamente: ${baseDeDatosOriginal} ---`, chalk.green);
             if (!mensaje){
                 console.log('================================================');
                 logConHora('--- Inicio automatico del backup ---', chalk.yellow);
@@ -141,10 +141,11 @@ function intentarHacerBackup(mensaje) {
             logConHora(`--- BackUp Automatico numero: ${llamadas} ---`, chalk.yellow);
             logConHora(`--- Tablas verificadas o creadas correctamente ---`, chalk.green);
         } else {
-            logConHora(`--- No se encontraron backups para copiar ---`, chalk.red);
+            logConHora(`--- No se encontraron respaldos para copiar ---`, chalk.red);
+            logConHora('--- Intentando crear la base de datos ---', chalk.yellow);
             const db = new sqlite3.Database('miBaseDeDatos.db', (err) => {
                 if (err) {
-                    logConHora(`Error al conectar con la base de datos: ${err.message}`, chalk.red);
+                    logConHora(`Error al crear la base de datos: ${err.message}`, chalk.red);
                     return;
                 } else {
                     // Crear las tablas si no existen (solo se ejecuta si es la primera vez o se eliminó el .db)
@@ -191,9 +192,9 @@ function intentarHacerBackup(mensaje) {
 
 function verificarDirectorio() {
     console.clear();
+    console.log('==================Verificando Directorio de respaldos==================');
     let intentos = 0;
     if (!fs.existsSync('../../backups')) {
-        console.log('================================================');
         logConHora('--- El directorio de respaldos no existe ---', chalk.red);
         logConHora('--- Intentando crear el directorio de respaldos ---', chalk.yellow);
         setTimeout(() => {
@@ -216,7 +217,6 @@ function verificarDirectorio() {
             });
         }, 3000);
     } else {
-        console.log('================================================');
         logConHora('--- Directorio de respaldos encontrado ---', chalk.green);
         setTimeout(intentarHacerBackup, 2000);
     }
@@ -243,8 +243,8 @@ if (process.stdin.isTTY) {
         }
     })
 } else {
+    console.log('=========================Inicio=========================');
     logConHora('--- Modo no interactivo detectado ---', chalk.yellow);
     logConHora('--- Solo se ejecutarán backups automaticos ---', chalk.yellow);
-    console.log('================================================');
 }
 
