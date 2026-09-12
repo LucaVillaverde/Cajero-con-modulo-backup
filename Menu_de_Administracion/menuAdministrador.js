@@ -5,6 +5,11 @@ import { editarCuentaMenu } from "./Edicion/editarCuentaMenu.js"
 import { eliminarCuenta } from "./Eliminacion/eliminarCuenta.js"
 import { verBaseDeDatos } from "./Menu_Base_de_Datos/Peticiones/DB/verBaseDeDatos.js"
 import fs from "fs";
+import path from "path";
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 
 /**
