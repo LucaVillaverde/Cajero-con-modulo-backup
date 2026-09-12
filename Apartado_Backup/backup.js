@@ -85,6 +85,7 @@ function hacerBackup(mensaje) {
     const pathNuevoBackup = path.join(carpetaBackups, nuevoBackup);
 
     // Mensajes
+    console.log('================================================');
     if (mensaje) {
         logConHora('--- Forzando el inicio del backup ---', chalk.yellow);
     } else {
@@ -120,6 +121,7 @@ function hacerBackup(mensaje) {
 function intentarHacerBackup(mensaje) {
     console.clear();
     if (!fs.existsSync(baseDeDatosOriginal)) {
+        console.log('================================================');
         logConHora(`--- La base de datos original no existe: ${baseDeDatosOriginal} ---`, chalk.red);
         const carpetaBackups = '../../backups';
         const archivos = fs.readdirSync(carpetaBackups);
@@ -130,6 +132,7 @@ function intentarHacerBackup(mensaje) {
             fs.copyFileSync(path.join(carpetaBackups, ultimoBackup), baseDeDatosOriginal);
             logConHora(`--- Base de datos original copiada exitosamente: ${baseDeDatosOriginal} ---`, chalk.green);
             if (!mensaje){
+                console.log('================================================');
                 logConHora('--- Inicio automatico del backup ---', chalk.yellow);
                 if (llamadas === 0) {
                     llamadas++;
@@ -190,6 +193,7 @@ function verificarDirectorio() {
     console.clear();
     let intentos = 0;
     if (!fs.existsSync('../../backups')) {
+        console.log('================================================');
         logConHora('--- El directorio de respaldos no existe ---', chalk.red);
         logConHora('--- Intentando crear el directorio de respaldos ---', chalk.yellow);
         setTimeout(() => {
@@ -212,6 +216,7 @@ function verificarDirectorio() {
             });
         }, 3000);
     } else {
+        console.log('================================================');
         logConHora('--- Directorio de respaldos encontrado ---', chalk.green);
         setTimeout(intentarHacerBackup, 2000);
     }
