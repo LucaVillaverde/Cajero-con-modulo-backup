@@ -68,8 +68,18 @@ function hacerBackup(mensaje) {
     const archivos = fs.readdirSync(carpetaBackups);
     const backupsDB = archivos.filter(file => file.endsWith('.db'));
 
+    // Año, mes, día
     const ahora = new Date();
-    const nuevoBackup = `backup-${ahora.toISOString().replace(/[:.]/g, '-')}.db`;
+    const año = ahora.getFullYear();
+    const mes = String(ahora.getMonth() + 1).padStart(2, '0');
+    const dia = String(ahora.getDate()).padStart(2, '0');
+
+    // Hora, minuto, segundo
+    const hora = String(ahora.getHours()).padStart(2, '0');
+    const minuto = String(ahora.getMinutes()).padStart(2, '0');
+    const segundo = String(ahora.getSeconds()).padStart(2, '0');
+
+    const nuevoBackup = `backup-${año}-${mes}-${dia}-${hora}-${minuto}-${segundo}.db`;
     const pathNuevoBackup = path.join(carpetaBackups, nuevoBackup);
 
     // Mensajes
