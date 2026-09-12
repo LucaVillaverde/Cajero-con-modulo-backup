@@ -45,7 +45,12 @@ process.on('SIGUSR2', () => {
 function logConHora(mensaje, error, colorFn = chalk.cyan.bgBlack) {
     const ahora = new Date();
     const hora = ahora.toLocaleTimeString('es-UY', { hour12: false });
-    console.log(colorFn(`\n[${hora}] ${mensaje} ${error}\n`));
+    if (error === false) {
+        console.log(colorFn(`\n[${hora}] ${mensaje}\n`));
+    } else {
+        console.log(colorFn(`\n[${hora}] ${mensaje} ${error}\n`));
+    }
+
 }
 
 // Tarea para efectuar un backup automatico cada hora
