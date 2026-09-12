@@ -20,6 +20,7 @@ let cerrando = false;
 
 // Listeners para capturar señales
 process.on('SIGUSR1', () => {
+    console.log('================================================');
     logConHora('--- Señal SIGUSR1 recibida ---', chalk.yellow);
     if (enProceso) {
         logConHora('--- Backup en curso, ignorando Backup manual ---', chalk.yellow);
@@ -31,6 +32,7 @@ process.on('SIGUSR1', () => {
 });
 
 process.on('SIGUSR2', () => {
+    console.log('================================================');
     logConHora('--- Señal SIGUSR2 recibida ---', chalk.yellow);
     if (enProceso) {
         logConHora('--- Backup en curso, esperando a que termine para cerrar ---', chalk.yellow);
@@ -238,5 +240,6 @@ if (process.stdin.isTTY) {
 } else {
     logConHora('--- Modo no interactivo detectado ---', chalk.yellow);
     logConHora('--- Solo se ejecutarán backups automaticos ---', chalk.yellow);
+    console.log('================================================');
 }
 

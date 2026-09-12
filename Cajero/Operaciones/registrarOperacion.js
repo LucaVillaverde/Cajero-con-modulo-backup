@@ -16,7 +16,18 @@ Luego se llama a la funcion consulta(tipo) con la informacion de la variable "ti
 */
 
 export function registrarOperacion(cedulaGuardada, tipo, monto, destino) {
-    const fecha = new Date().toISOString();
+        // Año, mes, día
+    const ahora = new Date();
+    const año = ahora.getFullYear();
+    const mes = String(ahora.getMonth() + 1).padStart(2, '0');
+    const dia = String(ahora.getDate()).padStart(2, '0');
+
+    // Hora, minuto, segundo
+    const hora = String(ahora.getHours()).padStart(2, '0');
+    const minuto = String(ahora.getMinutes()).padStart(2, '0');
+    const segundo = String(ahora.getSeconds()).padStart(2, '0');
+
+    const fecha = `${año}-${mes}-${dia}T${hora}:${minuto}:${segundo}`;
     if (tipo !== 'transaccion') {
         destino = "Ninguno";
     }
