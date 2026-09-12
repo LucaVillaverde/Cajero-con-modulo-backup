@@ -25,7 +25,7 @@ process.on('SIGUSR2', () => {
         logConHora('\n--- Backup en curso, esperando a que termine para cerrar ---\n', chalk.yellow);
         cerrando = true;
     } else {
-        logConHora('\n--- No hay backup en curso, cerrando ahora ---\n'. chalk.green);
+        logConHora('\n--- No hay backup en curso, cerrando ahora ---\n', chalk.green);
         process.exit(0);
     }
 });
