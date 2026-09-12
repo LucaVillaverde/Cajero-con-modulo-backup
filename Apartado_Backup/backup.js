@@ -20,37 +20,32 @@ let cerrando = false;
 
 // Listeners para capturar señales
 process.on('SIGUSR1', () => {
-    logConHora('--- Señal SIGUSR1 recibida ---');
+    logConHora('--- Señal SIGUSR1 recibida ---', chalk.yellow);
     if (enProceso) {
-        logConHora('--- Backup en curso, ignorando Backup manual ---', false, chalk.yellow);
+        logConHora('--- Backup en curso, ignorando Backup manual ---', chalk.yellow);
     } else {
-        logConHora('--- No hay backup en curso, ejecutando Backup manual ---', false, chalk.green);
+        logConHora('--- No hay backup en curso, ejecutando Backup manual ---', chalk.green);
         llamadasManual++;
         hacerBackup(true);
     }
 });
 
 process.on('SIGUSR2', () => {
-    logConHora('--- Señal SIGUSR2 recibida ---');
+    logConHora('--- Señal SIGUSR2 recibida ---', chalk.yellow);
     if (enProceso) {
-        logConHora('--- Backup en curso, esperando a que termine para cerrar ---', false, chalk.yellow);
+        logConHora('--- Backup en curso, esperando a que termine para cerrar ---', chalk.yellow);
         cerrando = true;
     } else {
-        logConHora('--- No hay backup en curso, cerrando ahora ---', false, chalk.green);
+        logConHora('--- No hay backup en curso, cerrando ahora ---', chalk.green);
         process.exit(0);
     }
 });
 
 // Formato para LOG
-function logConHora(mensaje, error, colorFn = chalk.cyan.bgBlack) {
+function logConHora(mensaje, colorFn = chalk.cyan.bgBlack) {
     const ahora = new Date();
     const hora = ahora.toLocaleTimeString('es-UY', { hour12: false });
-    if (error === false) {
-        console.log(colorFn(`\n[${hora}] ${mensaje}\n`));
-    } else {
-        console.log(colorFn(`\n[${hora}] ${mensaje} ${error}\n`));
-    }
-
+    console.log(colorFn(`\n[${hora}] ${mensaje}\n`));
 }
 
 // Tarea para efectuar un backup automatico cada hora
@@ -79,32 +74,32 @@ function hacerBackup(mensaje) {
 
     // Mensajes
     if (mensaje) {
-        logConHora('--- Forzando el inicio del backup ---');
+        logConHora('--- Forzando el inicio del backup ---', chalk.yellow);
     } else {
-        logConHora('--- Inicio automático del backup ---');
+        logConHora('--- Inicio automático del backup ---', chalk.yellow);
         if (llamadas === 0) llamadas++;
     }
-    logConHora(`--- BackUp Automático número: ${llamadas} ---`);
-    logConHora(`--- BackUp Manual número: ${llamadasManual} ---`);
+    logConHora(`--- BackUp Automático número: ${llamadas} ---`, chalk.yellow);
+    logConHora(`--- BackUp Manual número: ${llamadasManual} ---`, chalk.yellow);
 
     // Rotación de backups
     if (backupsDB.length >= 10) {
         backupsDB.sort((a, b) => fs.statSync(path.join(carpetaBackups, a)).mtime - fs.statSync(path.join(carpetaBackups, b)).mtime);
         const backupAntiguo = backupsDB.shift();
         fs.unlinkSync(path.join(carpetaBackups, backupAntiguo));
-        logConHora(`--- Eliminando backup antiguo: ${backupAntiguo} ---`);
+        logConHora(`--- Eliminando backup antiguo: ${backupAntiguo} ---`, chalk.yellow);
     }
 
     try {
         fs.copyFileSync(baseDeDatosOriginal, pathNuevoBackup);
-        logConHora(`--- Nuevo backup creado exitosamente: ${nuevoBackup} ---`);
+        logConHora(`--- Nuevo backup creado exitosamente: ${nuevoBackup} ---`, chalk.green);
     } catch (error) {
-        logConHora(`--- Error al crear el backup: ${error.message} ---`);
+        logConHora(`--- Error al crear el backup: ${error.message} ---`, chalk.red);
     }
 
     enProceso = false;
     if (cerrando) {
-        logConHora('--- Backup finalizado, cerrando programa ---');
+        logConHora('--- Backup finalizado, cerrando programa ---', chalk.green);
         process.exit(0);
     }
 }
@@ -113,28 +108,28 @@ function hacerBackup(mensaje) {
 function intentarHacerBackup(mensaje) {
     console.clear();
     if (!fs.existsSync(baseDeDatosOriginal)) {
-        logConHora(`--- La base de datos original no existe: ${baseDeDatosOriginal} ---`);
+        logConHora(`--- La base de datos original no existe: ${baseDeDatosOriginal} ---`, chalk.red);
         const carpetaBackups = '../../backups';
         const archivos = fs.readdirSync(carpetaBackups);
         const backupsDB = archivos.filter(file => file.endsWith('.db'));
         if (backupsDB.length > 0) {
             const ultimoBackup = backupsDB[backupsDB.length - 1];
-            logConHora(`--- Base de datos original encontrada: ${ultimoBackup} ---`);
+            logConHora(`--- Base de datos original encontrada: ${ultimoBackup} ---`, chalk.green);
             fs.copyFileSync(path.join(carpetaBackups, ultimoBackup), baseDeDatosOriginal);
-            logConHora(`\n--- Base de datos original copiada exitosamente: ${baseDeDatosOriginal} ---`);
+            logConHora(`--- Base de datos original copiada exitosamente: ${baseDeDatosOriginal} ---`, chalk.green);
             if (!mensaje){
-                logConHora('\n--- Inicio automatico del backup ---');
+                logConHora('--- Inicio automatico del backup ---', chalk.yellow);
                 if (llamadas === 0) {
                     llamadas++;
                 }
             }
-            logConHora(`--- BackUp Automatico numero: ${llamadas} ---`);
-            logConHora(`\n--- Tablas verificadas o creadas correctamente ---`);
+            logConHora(`--- BackUp Automatico numero: ${llamadas} ---`, chalk.yellow);
+            logConHora(`--- Tablas verificadas o creadas correctamente ---`, chalk.green);
         } else {
-            logConHora(`\n--- No se encontraron backups para copiar ---`);
+            logConHora(`--- No se encontraron backups para copiar ---`, chalk.red);
             const db = new sqlite3.Database('miBaseDeDatos.db', (err) => {
                 if (err) {
-                    logConHora('Error al conectar con la base de datos:', err.message);
+                    logConHora(`Error al conectar con la base de datos: ${err.message}`, chalk.red);
                     return;
                 } else {
                     // Crear las tablas si no existen (solo se ejecuta si es la primera vez o se eliminó el .db)
@@ -159,8 +154,8 @@ function intentarHacerBackup(mensaje) {
                                 Fecha TEXT NOT NULL
                             )
                         `);
-                        logConHora('--- Base de datos creada correctamente ---');
-                        logConHora('--- Tablas verificadas o creadas correctamente ---');
+                        logConHora('--- Base de datos creada correctamente ---', chalk.green);
+                        logConHora('--- Tablas verificadas o creadas correctamente ---', chalk.green);
                         setTimeout(() => {
                             console.clear();
                             hacerBackup(mensaje);
@@ -170,7 +165,7 @@ function intentarHacerBackup(mensaje) {
             });
         }
     } else {
-        logConHora(`--- Base de datos original encontrada: ${baseDeDatosOriginal} ---`);
+        logConHora(`--- Base de datos original encontrada: ${baseDeDatosOriginal} ---`, chalk.green);
         setTimeout(() => {
             console.clear();
             hacerBackup(mensaje);
@@ -183,29 +178,29 @@ function verificarDirectorio() {
     console.clear();
     let intentos = 0;
     if (!fs.existsSync('../../backups')) {
-        logConHora('--- El directorio de respaldos no existe ---');
-        logConHora('--- Intentando crear el directorio de respaldos ---');
+        logConHora('--- El directorio de respaldos no existe ---', chalk.red);
+        logConHora('--- Intentando crear el directorio de respaldos ---', chalk.yellow);
         setTimeout(() => {
             console.clear();
             fs.mkdir('../../backups', { recursive: true }, (err) => {
                 if (err) {
-                    logConHora('Error al crear la carpeta de respaldos:', err.message);
+                    logConHora(`Error al crear la carpeta de respaldos: ${err.message}`, chalk.red);
                     if (intentos < 3) {
                         intentos++;
-                        logConHora('--- Volviendo a intentar ---');
+                        logConHora('--- Volviendo a intentar ---', chalk.yellow);
                         setTimeout(verificarDirectorio, 2000);
                     } else {
-                        logConHora('--- No se pudo crear el directorio de respaldos ---');
+                        logConHora('--- No se pudo crear el directorio de respaldos ---', chalk.red);
                         process.exit(1);
                     }
                 } else {
-                    logConHora('--- Directorio de respaldos creado exitosamente ---');
+                    logConHora('--- Directorio de respaldos creado exitosamente ---', chalk.green);
                     setTimeout(intentarHacerBackup, 2000);
                 }
             });
         }, 3000);
     } else {
-        logConHora('--- Directorio de respaldos encontrado ---');
+        logConHora('--- Directorio de respaldos encontrado ---', chalk.green);
         setTimeout(intentarHacerBackup, 2000);
     }
 }
@@ -226,12 +221,12 @@ if (process.stdin.isTTY) {
             intentarHacerBackup(mensaje);
         }
         if (key && key.name === 'escape') {
-            logConHora('--- Saliendo... ---');
+            logConHora('--- Saliendo... ---', chalk.yellow);
             process.exit();
         }
     })
 } else {
     logConHora('--- Modo no interactivo detectado ---', chalk.yellow);
-    logConHora('--- Solo se ejecutarán backups automaticos ---');
+    logConHora('--- Solo se ejecutarán backups automaticos ---', chalk.yellow);
 }
 
