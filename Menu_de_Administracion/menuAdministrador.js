@@ -39,7 +39,8 @@ export function menuAdministrador() {
     console.log(chalk.cyan.bgBlack("\n--- Ingrese 3 para entrar al menu de editar cuenta ---"));
     console.log(chalk.cyan.bgBlack("\n--- Ingrese 4 si quiere eliminar una cuenta ---"));
     console.log(chalk.cyan.bgBlack("\n--- Ingrese 5 si quiere cerrar sesion ---"));
-    console.log(chalk.cyan.bgBlack("\n--- Ingrese 6 para cerrar el programa backup ---\n"));
+    console.log(chalk.cyan.bgBlack("\n--- Ingrese 7 para efectuar un backup manual ---"));
+    console.log(chalk.cyan.bgBlack("\n--- Ingrese 9 para cerrar el programa backup ---\n"));
     rl.question("\nDigite la opcion: ", (input) => {
         const opcion = parseInt(input);
         switch (opcion) {
@@ -58,7 +59,10 @@ export function menuAdministrador() {
             case 5:
                 reinicio();
                 break;
-            case 6:
+            case 7:
+                efectuarBackup();
+                break;
+            case 9:
                 cerrarBackup();
                 break;
             default:
@@ -69,6 +73,25 @@ export function menuAdministrador() {
         }
     });
 }    
+
+function efectuarBackup() {
+    try {
+        const pidPath = path.resolve(__dirname, '../Apartado_Backup/backup.pid');
+        if (fs.existsSync(pidPath)) {
+            const pid = parseInt(fs.readFileSync(pidPath, "utf8"));
+            if (!isNaN(pid)) {
+                process.kill(pid, "SIGUSR1");
+                console.log(chalk.cyan.bgBlack("\n--- Señal SIGUSR1 enviada al proceso de backup ---\n"));
+            } else {
+                console.log(chalk.red("\n--- El archivo backup.pid no contiene un PID válido ---\n"));
+            }
+        } else {
+            console.log(chalk.red("\n--- No se encontró el archivo backup.pid ---\n"));
+        }
+    } catch (err) {
+        console.error(chalk.red("\n--- Error al intentar hacer el backup ---\n"), err.message);
+    }
+}
 
 function cerrarBackup() {
     try {

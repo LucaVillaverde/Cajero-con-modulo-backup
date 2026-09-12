@@ -18,14 +18,24 @@ let llamadasManual = 0; // Contador de backups manuales efectuados
 let enProceso = false; // Variable para controlar si hay un backup en proceso
 let cerrando = false;
 
-// Listener para capturar señales
-process.on('SIGUSR2', () => {
-    logConHora('\n--- Señal SIGUSR2 recibida ---\n');
+// Listeners para capturar señales
+process.on('SIGUSR1', () => {
+    logConHora('--- Señal SIGUSR1 recibida ---');
     if (enProceso) {
-        logConHora('\n--- Backup en curso, esperando a que termine para cerrar ---\n', chalk.yellow);
+        logConHora('--- Backup en curso, ignorando Backup manual ---', chalk.yellow);
+    } else {
+        logConHora('--- No hay backup en curso, ejecutando Backup manual ---', chalk.green);
+        hacerBackup(true);
+    }
+});
+
+process.on('SIGUSR2', () => {
+    logConHora('--- Señal SIGUSR2 recibida ---');
+    if (enProceso) {
+        logConHora('--- Backup en curso, esperando a que termine para cerrar ---', chalk.yellow);
         cerrando = true;
     } else {
-        logConHora('\n--- No hay backup en curso, cerrando ahora ---\n', chalk.green);
+        logConHora('--- No hay backup en curso, cerrando ahora ---', chalk.green);
         process.exit(0);
     }
 });
