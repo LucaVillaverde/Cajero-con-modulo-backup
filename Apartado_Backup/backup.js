@@ -5,57 +5,80 @@ import sqlite3 from 'sqlite3';
 import cron from 'node-cron';
 import keypress from 'keypress';
 
+// Guardado de PID para envio de señales
+const pidFile = path.resolve(__dirname, 'backup.pid');
+fs.writeFileSync(pidFile, process.pid.toString());
 
-let llamadas = 0;
-let llamadasManual = 0;
+let llamadas = 0; // Contador de backups automaticos efectuados
+let llamadasManual = 0; // Contador de backups manuales efectuados
+let enProceso = false; // Variable para controlar si hay un backup en proceso
+let cerrando = false;
 
-// cron.schedule('0 0 * * * *', () => {
-//     llamadas++;
-//     verificarDirectorio();
-// });
+// Listener para capturar señales
+process.on('SIGUSR2', () => {
+    console.log(chalk.cyan.bgBlack('\n--- Señal SIGUSR2 recibida ---\n'));
+    if (enProceso) {
+        console.log(chalk.yellow('\n--- Backup en curso, esperando a que termine para cerrar ---\n'));
+        cerrando = true;
+    } else {
+        console.log(chalk.cyan.bgBlack('\n--- No hay backup en curso, cerrando ahora ---\n'));
+        process.exit(0);
+    }
+});
 
-cron.schedule('* * * * *', () => {
+// Tarea para efectuar un backup automatico cada hora
+
+cron.schedule('0 0 * * * *', () => {
     llamadas++;
     verificarDirectorio();
 });
 
+// cron.schedule('* * * * *', () => {
+//     llamadas++;
+//     verificarDirectorio();
+// });
+
 const baseDeDatosOriginal = '../../miBaseDeDatos.db'; // Asegúrate de que esta ruta sea correcta
 
 function hacerBackup(mensaje) {
+    enProceso = true;
     const carpetaBackups = '../../backups';
     const archivos = fs.readdirSync(carpetaBackups);
     const backupsDB = archivos.filter(file => file.endsWith('.db'));
 
-    // Crear un nuevo backup
     const ahora = new Date();
     const nuevoBackup = `backup-${ahora.toISOString().replace(/[:.]/g, '-')}.db`;
     const pathNuevoBackup = path.join(carpetaBackups, nuevoBackup);
-    if (mensaje){
+
+    // Mensajes
+    if (mensaje) {
         console.log(chalk.cyan('\n--- Forzando el inicio del backup ---'));
     } else {
-        console.log(chalk.cyan('\n--- Inicio automatico del backup ---'));
-        if (llamadas === 0) {
-            llamadas++;
-        }
+        console.log(chalk.cyan('\n--- Inicio automático del backup ---'));
+        if (llamadas === 0) llamadas++;
     }
-    console.log(chalk.cyan.bgBlack(`\n--- BackUp Automatico numero: ${llamadas} ---`));
-    console.log(chalk.cyan.bgBlack(`\n--- BackUp Manual numero: ${llamadasManual} ---`));
+    console.log(chalk.cyan.bgBlack(`\n--- BackUp Automático número: ${llamadas} ---`));
+    console.log(chalk.cyan.bgBlack(`\n--- BackUp Manual número: ${llamadasManual} ---`));
 
-
-    // Si hay más de 10 backups, eliminar los más antiguos
+    // Rotación de backups
     if (backupsDB.length >= 10) {
         backupsDB.sort((a, b) => fs.statSync(path.join(carpetaBackups, a)).mtime - fs.statSync(path.join(carpetaBackups, b)).mtime);
-        const backupAntiguo = backupsDB.shift(); // Elimina el más antiguo
-        const pathBackupAntiguo = path.join(carpetaBackups, backupAntiguo);
-        console.log(chalk.yellow(`\n--- Eliminando backup antiguo: ${pathBackupAntiguo} ---`));
-        fs.unlinkSync(pathBackupAntiguo); // Borra el archivo más antiguo
+        const backupAntiguo = backupsDB.shift();
+        fs.unlinkSync(path.join(carpetaBackups, backupAntiguo));
+        console.log(chalk.yellow(`\n--- Eliminando backup antiguo: ${backupAntiguo} ---`));
     }
 
     try {
-        fs.copyFileSync(baseDeDatosOriginal, pathNuevoBackup); // Copia la base de datos
+        fs.copyFileSync(baseDeDatosOriginal, pathNuevoBackup);
         console.log(chalk.green(`\n--- Nuevo backup creado exitosamente: ${nuevoBackup} ---`));
     } catch (error) {
         console.log(chalk.red(`\n--- Error al crear el backup: ${error.message} ---`));
+    }
+
+    enProceso = false;
+    if (cerrando) {
+        console.log(chalk.cyan.bgBlack('\n--- Backup finalizado, cerrando programa ---\n'));
+        process.exit(0);
     }
 }
 

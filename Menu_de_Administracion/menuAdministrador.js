@@ -4,6 +4,7 @@ import { crearCuenta } from "./Creacion/crearCuenta.js"
 import { editarCuentaMenu } from "./Edicion/editarCuentaMenu.js"
 import { eliminarCuenta } from "./Eliminacion/eliminarCuenta.js"
 import { verBaseDeDatos } from "./Menu_Base_de_Datos/Peticiones/DB/verBaseDeDatos.js"
+import fs from "fs";
 
 
 /**
@@ -32,7 +33,8 @@ export function menuAdministrador() {
     console.log(chalk.cyan.bgBlack("\n--- Ingrese 2 si quiere crear una cuenta ---"));
     console.log(chalk.cyan.bgBlack("\n--- Ingrese 3 para entrar al menu de editar cuenta ---"));
     console.log(chalk.cyan.bgBlack("\n--- Ingrese 4 si quiere eliminar una cuenta ---"));
-    console.log(chalk.cyan.bgBlack("\n--- Ingrese 5 si quiere cerrar sesion ---\n"));
+    console.log(chalk.cyan.bgBlack("\n--- Ingrese 5 si quiere cerrar sesion ---"));
+    console.log(chalk.cyan.bgBlack("\n--- Ingrese 6 para cerrar el programa backup ---\n"));
     rl.question("\nDigite la opcion: ", (input) => {
         const opcion = parseInt(input);
         switch (opcion) {
@@ -51,6 +53,9 @@ export function menuAdministrador() {
             case 5:
                 reinicio();
                 break;
+            case 6:
+                cerrarBackup();
+                break;
             default:
                 console.clear();
                 console.log(chalk.yellow.bgBlack("\n--- La opcion ingresada no es valida ---\n"));
@@ -59,6 +64,26 @@ export function menuAdministrador() {
         }
     });
 }    
+
+function cerrarBackup() {
+    try {
+        const pidPath = path.resolve(__dirname, '../Apartado_Backup/backup.pid');
+        if (fs.existsSync(pidPath)) {
+            const pid = parseInt(fs.readFileSync(pidPath, "utf8"));
+            if (!isNaN(pid)) {
+                process.kill(pid, "SIGUSR2");
+                console.log(chalk.cyan.bgBlack("\n--- Señal SIGUSR2 enviada al proceso de backup ---\n"));
+            } else {
+                console.log(chalk.red("\n--- El archivo backup.pid no contiene un PID válido ---\n"));
+            }
+        } else {
+            console.log(chalk.red("\n--- No se encontró el archivo backup.pid ---\n"));
+        }
+    } catch (err) {
+        console.error(chalk.red("\n--- Error al intentar cerrar el backup ---\n"), err.message);
+    }
+    setTimeout(menuAdministrador, 2000);
+}
 
 
 export default menuAdministrador
