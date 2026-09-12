@@ -4,6 +4,10 @@ import chalk from 'chalk';
 import sqlite3 from 'sqlite3';
 import cron from 'node-cron';
 import keypress from 'keypress';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Guardado de PID para envio de señales
 const pidFile = path.resolve(__dirname, 'backup.pid');
