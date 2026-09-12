@@ -91,6 +91,7 @@ function efectuarBackup() {
     } catch (err) {
         console.error(chalk.red("\n--- Error al intentar hacer el backup ---\n"), err.message);
     }
+    setTimeout(menuAdministrador, 2000);
 }
 
 function cerrarBackup() {
