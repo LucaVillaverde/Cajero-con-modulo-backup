@@ -20,15 +20,22 @@ let cerrando = false;
 
 // Listener para capturar señales
 process.on('SIGUSR2', () => {
-    console.log(chalk.cyan.bgBlack('\n--- Señal SIGUSR2 recibida ---\n'));
+    logConHora('\n--- Señal SIGUSR2 recibida ---\n');
     if (enProceso) {
-        console.log(chalk.yellow('\n--- Backup en curso, esperando a que termine para cerrar ---\n'));
+        logConHora('\n--- Backup en curso, esperando a que termine para cerrar ---\n', chalk.yellow);
         cerrando = true;
     } else {
-        console.log(chalk.cyan.bgBlack('\n--- No hay backup en curso, cerrando ahora ---\n'));
+        logConHora('\n--- No hay backup en curso, cerrando ahora ---\n'. chalk.green);
         process.exit(0);
     }
 });
+
+// Formato para LOG
+function logConHora(mensaje, colorFn = chalk.cyan.bgBlack) {
+    const ahora = new Date();
+    const hora = ahora.toLocaleTimeString('es-UY', { hour12: false });
+    console.log(colorFn(`\n[${hora}] ${mensaje}\n`));
+}
 
 // Tarea para efectuar un backup automatico cada hora
 
@@ -201,7 +208,7 @@ if (process.stdin.isTTY) {
         }
     })
 } else {
-    console.log(chalk.yellow('\n--- Modo no interactivo detectado ---\n'));
-    console.log(chalk.cyan('\n--- Solo se ejecutarán backups automaticos ---\n'));
+    logConHora('--- Modo no interactivo detectado ---', chalk.yellow);
+    logConHora('--- Solo se ejecutarán backups automaticos ---');
 }
 
